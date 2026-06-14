@@ -23,6 +23,12 @@
   - 修改字型管理系統，使其支援從 `exult.cfg` 設定檔中讀取自訂字型路徑參數（`<font_path>` 與 `<small_font_path>`）
   - 修正中英文混排時，行高（Line Height）與垂直間距（Vertical Spacing）的計算邏輯，解決 CJK 文字的行距異常問題
 
+#### `shapes/fontvga.h` / `shapeid.h` / `shapeid.cc`
+- **類型**：修改
+- **目的**：
+  - 修正 2026 年上游版本 `Shape_manager::paint_text` 函式多載（Overload）造成的參數型別推斷錯誤
+  - 加回 `force_cjk` 參數，確保 `conversation.cc` 傳入的布林值不會被誤認為字串長度，解決對話選項渲染到螢幕最頂端的錯誤
+
 ---
 
 ### 💬 對話系統 (Conversation / Dialogue)
@@ -57,6 +63,12 @@
 - **類型**：修改
 - **目的**：
   - 修改法術書介面（Spellbook）的法術名稱渲染邏輯，改為讀取翻譯後的中文名稱字串，讓法術書能正確顯示中文法術名
+
+#### `effects.cc`
+- **類型**：修改
+- **目的**：
+  - 在 `Text_effect::paint` 等渲染特效文字的地方，新增 `Font::is_painting_bark = true` 開關
+  - 解決 NPC 頭頂飄字（Bark）無法正確讀取 `font_size_bark` 設定檔參數的問題
 
 ---
 
@@ -123,6 +135,9 @@
 | 修改 | `shapes/ttf_font.cc` | 字型渲染 |
 | 修改 | `shapes/font.cc` | 字型管理 |
 | 修改 | `shapes/font.h` | 字型管理 |
+| 修改 | `shapes/fontvga.h` | 字型管理 |
+| 修改 | `shapeid.h` | 字型管理 |
+| 修改 | `shapeid.cc` | 字型管理 |
 | 修改 | `usecode/conversation.cc` | 對話系統 |
 | 修改 | `usecode/conversation.h` | 對話系統 |
 | 修改 | `usecode/ucinternal.cc` | Usecode 引擎 / 鍵盤導覽 |
@@ -130,6 +145,7 @@
 | 修改 | `exult.h` | 輸入事件系統 |
 | 修改 | `gumps/Spellbook_gump.cc` | 法術書介面 |
 | 修改 | `gumps/Spellbook_gump.h` | 法術書介面 |
+| 修改 | `effects.cc` | 特效與飄字 |
 | 修改 | `msvcstuff/vs2019/vcpkg.json` | 建置系統 |
 | 修改 | `msvcstuff/vs2019/Exult.sln` | 建置系統 |
 | **新增** | `msvcstuff/vs2019/textpack/textpack.vcxproj` | 建置系統 |
