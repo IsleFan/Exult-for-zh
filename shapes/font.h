@@ -54,12 +54,23 @@ private:
 	int                         ver_lead = 0;
 	std::unique_ptr<Shape_file> font_shapes;
 	int                         highest = 0, lowest = 0;
+	int                         font_index = -1;
 
 	void calc_highlow();
 	void clean_up();
 	int  load_internal(IDataSource& data, int hlead, int vlead);
+	int get_original_height();
+	int get_chinese_font_size();
+	int get_text_height_for(const char* text);
+	int get_rendered_line_height_for(const char* text);
+	int get_text_baseline_for(const char* text);
+	int get_text_height_for(const char* text, int len);
+	int get_rendered_line_height_for(const char* text, int len);
+	int get_text_baseline_for(const char* text, int len);
 
 public:
+	static bool is_painting_bark;
+
 	Font();
 	Font(const File_spec& fname0, int index, int hlead = 0, int vlead = 1);
 	Font(const File_spec& fname0, const File_spec& fname1, int index, int hlead = 0, int vlead = 1);
@@ -89,13 +100,13 @@ public:
 	int paint_text_box(
 			Image_buffer8* win, const char* text, int x, int y, int w, int h, int vert_lead = 0, bool pbreak = false,
 			bool center = false, Cursor_info* cursor = nullptr, unsigned char* trans = nullptr);
-	int paint_text(Image_buffer8* win, const char* text, int xoff, int yoff, unsigned char* trans = nullptr);
+	int paint_text(Image_buffer8* win, const char* text, int xoff, int yoff, unsigned char* trans = nullptr, bool force_cjk = false);
 
-	int paint_text_right_aligned(Image_buffer8* win, const char* text, int xoff, int yoff, unsigned char* trans = nullptr) {
-		return paint_text(win, text, xoff - get_text_width(text), yoff, trans);
+	int paint_text_right_aligned(Image_buffer8* win, const char* text, int xoff, int yoff, unsigned char* trans = nullptr, bool force_cjk = false) {
+		return paint_text(win, text, xoff - get_text_width(text), yoff, trans, force_cjk);
 	}
 
-	int paint_text(Image_buffer8* win, const char* text, int textlen, int xoff, int yoff, unsigned char* trans = nullptr);
+	int paint_text(Image_buffer8* win, const char* text, int textlen, int xoff, int yoff, unsigned char* trans = nullptr, bool force_cjk = false);
 	int paint_text_box_fixedwidth(
 			Image_buffer8* win, const char* text, int x, int y, int w, int h, int char_width, int vert_lead = 0, int pbreak = 0,
 			unsigned char* trans = nullptr);
@@ -103,8 +114,8 @@ public:
 	int paint_text_fixedwidth(
 			Image_buffer8* win, const char* text, int textlen, int xoff, int yoff, int width, unsigned char* trans = nullptr);
 	// Get text width.
-	int get_text_width(const char* text);
-	int get_text_width(const char* text, int textlen);
+	int get_text_width(const char* text, bool force_cjk = false);
+	int get_text_width(const char* text, int textlen, bool force_cjk = false);
 	// Get dimensions of text box for multiline string
 	void get_text_box_dims(const char* text, int& width, int& height, int vert_lead = 0);
 	// Get text height, baseline, and vertical lead.
@@ -113,6 +124,12 @@ public:
 
 	int get_ver_lead() const {
 		return ver_lead;
+	}
+
+	// Actual vertical span produced by paint_text after baseline-shift:
+	// text renders from row_y to row_y + highest + lowest.
+	int get_rendered_line_height() const {
+		return highest + lowest;
 	}
 
 	int find_cursor(const char* text, int x, int y, int w, int h, int cx, int cy, int vert_lead);
