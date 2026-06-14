@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <VCToolsVersion>
     </VCToolsVersion>
@@ -37,7 +37,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <VCToolsVersion>
@@ -46,13 +46,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <VCToolsVersion>
@@ -535,7 +535,6 @@ for /f "tokens=* delims=" %%u in ('git ls-remote --get-url') do echo #define GIT
     <ClCompile Include="..\..\server\servewin32.cc" />
     <ClCompile Include="..\..\shapeid.cc" />
     <ClCompile Include="..\..\shapes\font.cc" />
-    <ClCompile Include="..\..\shapes\font_map.cc" />
     <ClCompile Include="..\..\shapes\fontgen.cc" />
     <ClCompile Include="..\..\shapes\fontvga.cc" />
     <ClCompile Include="..\..\shapes\items.cc" />
@@ -781,7 +780,6 @@ for /f "tokens=* delims=" %%u in ('git ls-remote --get-url') do echo #define GIT
     <ClInclude Include="..\..\shapes\baseinf.h" />
     <ClInclude Include="..\..\shapes\data_utils.h" />
     <ClInclude Include="..\..\shapes\font.h" />
-    <ClInclude Include="..\..\shapes\font_map.h" />
     <ClInclude Include="..\..\shapes\fontgen.h" />
     <ClInclude Include="..\..\shapes\fontvga.h" />
     <ClInclude Include="..\..\shapes\items.h" />
