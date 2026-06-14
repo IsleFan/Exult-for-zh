@@ -553,11 +553,11 @@ void Spellbook_gump::paint() {
 		int spell = book->bookmark;
 		if (spell >= 0 && spell < 72 && !custom_spell_names[spell].empty()) {
 			const char* name_str = custom_spell_names[spell].c_str();
-			// Use font 2 so Chinese TTF uses font_size_book (which defaults to 11)
-			int text_w = sman->get_text_width(2, name_str);
+			// Use font 0 (Normal Yellow) to match NPC dialogue/item names and use font_size_dialog
+			int text_w = sman->get_text_width(0, name_str);
 			int px = x + object_area.x + object_area.w / 2 - text_w / 2;
 			int py = y + object_area.y + object_area.h + 4; // Draw just below the spellbook
-			sman->paint_text(2, name_str, px, py);
+			sman->paint_text(0, name_str, px, py);
 		}
 	}
 	if (turning_page) {    // Animate turning page.

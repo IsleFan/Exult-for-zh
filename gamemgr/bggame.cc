@@ -1639,7 +1639,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 
 		{
 			const char* message = get_text_msg(you_cannot_do_that);
-			const int   height  = topy + 200 - endfont2->get_text_height() * 2;
+			const int   height  = topy + 200 - endfont2->get_rendered_line_height_for(message) * 2;
 			const int   width   = (gwin->get_width() - endfont2->get_text_width(message)) / 2;
 
 			for (unsigned int i = 150; i < 204; i++) {
@@ -1665,7 +1665,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 
 		{
 			const char* message = get_text_msg(damn_avatar);
-			const int   height  = topy + 200 - endfont2->get_text_height() * 2;
+			const int   height  = topy + 200 - endfont2->get_rendered_line_height_for(message) * 2;
 			const int   width   = (gwin->get_width() - endfont2->get_text_width(message)) / 2;
 
 			for (unsigned int i = 0; i < 100; i++) {
@@ -1705,7 +1705,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		// Paint text
 		{
 			const char* message = get_text_msg(blackgate_destroyed);
-			const int   height  = (gwin->get_height() - normal->get_text_height()) / 2;
+			const int   height  = (gwin->get_height() - normal->get_rendered_line_height_for(message)) / 2;
 			const int   width   = (gwin->get_width() - normal->get_text_width(message)) / 2;
 
 			normal->draw_text(ibuf, width, height, message);
@@ -1732,7 +1732,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		// Paint text
 		{
 			const char* message = get_text_msg(guardian_has_stopped);
-			const int   height  = (gwin->get_height() - normal->get_text_height()) / 2;
+			const int   height  = (gwin->get_height() - normal->get_rendered_line_height_for(message)) / 2;
 			const int   width   = (gwin->get_width() - normal->get_text_width(message)) / 2;
 			normal->draw_text(ibuf, width, height, message);
 		}
@@ -1775,7 +1775,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		fli3.info(&finfo);
 
 		int m;
-		int line_height = endfont3->get_text_height() + endfont3->get_ver_lead();
+		int line_height = endfont3->get_rendered_line_height_for(get_text_msg(txt_screen0)) + endfont3->get_ver_lead();
 		int starty      = (gwin->get_height() - line_height * 8) / 2;
 
 		next = SDL_GetTicks();
@@ -1815,7 +1815,7 @@ void BG_Game::end_game(bool success, bool within_game) {
 		// Paint backgound black
 		win->fill8(0);
 
-		line_height = exultendfont->get_text_height() + exultendfont->get_ver_lead();
+		line_height = exultendfont->get_rendered_line_height_for(get_text_msg(txt_screen1)) + exultendfont->get_ver_lead();
 		starty      = (gwin->get_height() - line_height * 11) / 2;
 
 		for (unsigned int i = 0; i < 11; i++) {

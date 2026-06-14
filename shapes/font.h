@@ -55,6 +55,7 @@ private:
 	std::unique_ptr<Shape_file> font_shapes;
 	int                         highest = 0, lowest = 0;
 	int                         font_index = -1;
+	bool                        force_not_book = false;
 
 	void calc_highlow();
 	void clean_up();
@@ -62,14 +63,15 @@ private:
 	int get_original_height();
 	int get_chinese_font_size();
 	int get_text_height_for(const char* text);
-	int get_rendered_line_height_for(const char* text);
 	int get_text_baseline_for(const char* text);
 	int get_text_height_for(const char* text, int len);
-	int get_rendered_line_height_for(const char* text, int len);
 	int get_text_baseline_for(const char* text, int len);
 
 public:
 	static bool is_painting_bark;
+	
+	int get_rendered_line_height_for(const char* text);
+	int get_rendered_line_height_for(const char* text, int len);
 
 	Font();
 	Font(const File_spec& fname0, int index, int hlead = 0, int vlead = 1);
@@ -77,6 +79,11 @@ public:
 	Font(Font&&) noexcept            = default;
 	Font& operator=(Font&&) noexcept = default;
 	~Font() noexcept                 = default;
+
+	void set_force_not_book(bool val) { force_not_book = val; }
+	bool get_force_not_book() const { return force_not_book; }
+	int get_font_index() const { return font_index; }
+
 	/**
 	 *  Loads a font from a File_spec.
 	 *  @param fname0   First file spec.

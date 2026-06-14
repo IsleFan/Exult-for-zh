@@ -145,9 +145,16 @@ namespace TTF {
         if (!sample_shape) return;
         if (sample_shape == last_sample) return; // Note: if is_book changes, we might miss an update, but usually a font is either book or not
         
+        last_sample = sample_shape;
+        
         int w = sample_shape->get_width();
         int h = sample_shape->get_height();
-        if (w <= 0 || h <= 0 || w > 100 || h > 100) return;
+        if (w <= 0 || h <= 0 || w > 100 || h > 100) {
+            // Default colors if invalid
+            if (!is_book) { cached_fg = 254; cached_bg = 255; }
+            else { cached_fg = 255; cached_bg = 0; }
+            return;
+        }
         
         Image_buffer8 temp_buf(w, h);
         temp_buf.fill8(0);
@@ -181,15 +188,17 @@ namespace TTF {
             if (core_color != -1) break;
         }
         
-        if (best_count > 0) {
-            if (!is_book) {
-                cached_fg = best_color;
-                cached_bg = 255;
+        // Always update colors!
+        if (!is_book) {
+            cached_fg = (best_count > 0) ? best_color : 254;
+            cached_bg = 255;
+        } else {
+            if (core_color != -1) {
+                cached_fg = best_color; // Colored book text (e.g. spell names if they use a colored book font)
             } else {
-                cached_fg = 255; // Force black for book text
-                cached_bg = (color_counts[255] > 0) ? 255 : 0;
+                cached_fg = 255; // Pure black font, force black
             }
-            last_sample = sample_shape;
+            cached_bg = 0; // Standard book fonts have no outline
         }
     }
 
@@ -254,7 +263,7 @@ namespace TTF {
             }
 
             // Draw outline/shadow first
-            if (bg_color != 0 && style.shadow_type != 0) {
+            if (cached_bg != 0 && bg_color != 0 && style.shadow_type != 0) {
                 for (unsigned int row = 0; row < bitmap.rows; ++row) {
                     for (unsigned int col = 0; col < bitmap.width; ++col) {
                         int byte_idx = row * bitmap.pitch + (col >> 3);

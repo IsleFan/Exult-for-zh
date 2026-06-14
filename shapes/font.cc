@@ -68,12 +68,12 @@ static std::string get_chinese_font_path(int font_size = -1) {
 	return get_system_path(path);
 }
 
-static TTF::Render_Style get_chinese_ttf_style(int font_index) {
+static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 	TTF::Render_Style style = {0, 0, -1, 1, 1, -1};
 	if (!config) return style;
 
 	bool is_bark = Font::is_painting_bark;
-	bool is_book = (font_index != 0 && font_index != 7);
+	bool is_book = (font->get_font_index() != 0 && font->get_font_index() != 7 && !font->get_force_not_book());
 
 	if (is_book && !is_bark) {
 		config->value("config/video/chinese/letter_spacing_book", style.letter_spacing, 0);
@@ -416,8 +416,8 @@ int Font::paint_text(
 	yoff += baseline;
 	TTF::load_font(get_chinese_font_path(force_cjk ? get_chinese_font_size() : get_text_height_for(text, textlen)).c_str(), force_cjk ? get_chinese_font_size() : get_text_height_for(text, textlen));
 	if (font_shapes) {
-		bool is_book = (font_index != 0 && font_index != 7);
-		TTF::Render_Style style = get_chinese_ttf_style(font_index);
+		bool is_book = (font_index != 0 && font_index != 7 && !force_not_book);
+		TTF::Render_Style style = get_chinese_ttf_style(this);
 		while (textlen > 0) {
 			uint32_t wch = TTF::decode_utf8(text, textlen);
 			if (wch == 0) {
@@ -603,7 +603,7 @@ int Font::paint_text_fixedwidth(
 	int yoff_original = yoff;
 	yoff += get_text_baseline_for(text);
 	TTF::load_font(get_chinese_font_path(get_text_height_for(text)).c_str(), get_text_height_for(text));
-	TTF::Render_Style style = get_chinese_ttf_style(font_index);
+	TTF::Render_Style style = get_chinese_ttf_style(this);
 	while (*text != 0) {
 		uint32_t wch = TTF::decode_utf8(text);
 		if (wch == 0) {
@@ -628,7 +628,7 @@ int Font::paint_text_fixedwidth(
 			Shape_frame* sample_shape = font_shapes->get_frame('A');
 			int          char_width   = TTF::get_char_width(wch, style);
 			int          paint_x      = x + (width - char_width) / 2;
-			bool         is_book      = (font_index != 0 && font_index != 7);
+			bool         is_book      = (font_index != 0 && font_index != 7 && !force_not_book);
 			TTF::paint_char(win, wch, paint_x, yoff_original + get_chinese_baseline_adjust(), sample_shape, trans, is_book, style);
 			x += width;
 		}
@@ -654,7 +654,7 @@ int Font::paint_text_fixedwidth(
 	int yoff_original = yoff;
 	yoff += get_text_baseline_for(text, textlen);
 	TTF::load_font(get_chinese_font_path(get_text_height_for(text, textlen)).c_str(), get_text_height_for(text, textlen));
-	TTF::Render_Style style = get_chinese_ttf_style(font_index);
+	TTF::Render_Style style = get_chinese_ttf_style(this);
 	while (textlen > 0) {
 		uint32_t wch = TTF::decode_utf8(text, textlen);
 		if (wch == 0) {
@@ -679,7 +679,7 @@ int Font::paint_text_fixedwidth(
 			Shape_frame* sample_shape = font_shapes->get_frame('A');
 			int          char_width   = TTF::get_char_width(wch, style);
 			int          paint_x      = x + (width - char_width) / 2;
-			bool         is_book      = (font_index != 0 && font_index != 7);
+			bool         is_book      = (font_index != 0 && font_index != 7 && !force_not_book);
 			TTF::paint_char(win, wch, paint_x, yoff_original + get_chinese_baseline_adjust(), sample_shape, trans, is_book, style);
 			x += width;
 		}
@@ -695,8 +695,8 @@ int Font::get_text_width(const char* text, bool force_cjk) {
 	int width = 0;
 	TTF::load_font(get_chinese_font_path(force_cjk ? get_chinese_font_size() : get_text_height_for(text)).c_str(), force_cjk ? get_chinese_font_size() : get_text_height_for(text));
 	if (font_shapes) {
-		bool is_book = (font_index != 0 && font_index != 7);
-		TTF::Render_Style style = get_chinese_ttf_style(font_index);
+		bool is_book = (font_index != 0 && font_index != 7 && !force_not_book);
+		TTF::Render_Style style = get_chinese_ttf_style(this);
 		while (*text != 0) {
 			if (static_cast<unsigned char>(*text) < 0x80 && *text != 127 && !((is_book || get_chinese_force_ttf_for_english()) && force_cjk)) {
 				Shape_frame* shape = font_shapes->get_frame(static_cast<unsigned char>(*text));
@@ -728,8 +728,8 @@ int Font::get_text_width(
 	int width = 0;
 	TTF::load_font(get_chinese_font_path(force_cjk ? get_chinese_font_size() : get_text_height_for(text, textlen)).c_str(), force_cjk ? get_chinese_font_size() : get_text_height_for(text, textlen));
 	if (font_shapes) {
-		bool is_book = (font_index != 0 && font_index != 7);
-		TTF::Render_Style style = get_chinese_ttf_style(font_index);
+		bool is_book = (font_index != 0 && font_index != 7 && !force_not_book);
+		TTF::Render_Style style = get_chinese_ttf_style(this);
 		while (textlen > 0) {
 			if (static_cast<unsigned char>(*text) < 0x80 && *text != 127 && !((is_book || get_chinese_force_ttf_for_english()) && force_cjk)) {
 				Shape_frame* shape = font_shapes->get_frame(static_cast<unsigned char>(*text));
@@ -756,8 +756,8 @@ void Font::get_text_box_dims(const char* text, int& width, int& height, int vert
 	int         cur_width = 0;
 	const char* orig_text = text;
 	bool        has_cjk   = Has_non_ascii(orig_text);
-	bool        is_book   = (font_index != 0 && font_index != 7);
-	TTF::Render_Style style = get_chinese_ttf_style(font_index);
+	bool        is_book   = (font_index != 0 && font_index != 7 && !force_not_book);
+	TTF::Render_Style style = get_chinese_ttf_style(this);
 
 	int num_lines = 1;
 	if (font_shapes) {
@@ -814,11 +814,11 @@ int Font::get_chinese_font_size() {
 		if (config) config->value("config/video/chinese/font_size_bark", user_size, 0);
 		return user_size > 0 ? user_size : 15;    // Bark default
 	}
-	if (font_index == 0) {
+	if (font_index == 0 || force_not_book) {
 		if (config) config->value("config/video/chinese/font_size_dialog", user_size, 0);
 		return user_size > 0 ? user_size : 15;    // Dialogues
 	}
-	if (font_index != 0 && font_index != 7) {
+	if (font_index != 0 && font_index != 7 && !force_not_book) {
 		if (config) config->value("config/video/chinese/font_size_book", user_size, 0);
 		return user_size > 0 ? user_size : 11;    // Books and UI (per user request)
 	}
@@ -912,7 +912,7 @@ int Font::find_cursor(
 	const int   max_lines   = h / height;    // # lines that can be shown.
 	int         cur_line    = 0;
 
-	TTF::Render_Style style = get_chinese_ttf_style(font_index);
+	TTF::Render_Style style = get_chinese_ttf_style(this);
 	while (*text != 0) {
 		const char* saved_text = text;
 		uint32_t    wch        = TTF::decode_utf8(text);
@@ -1034,7 +1034,7 @@ int Font::find_xcursor(
 		uint32_t    wch        = TTF::decode_utf8(text, textlen);
 
 		if (wch > 0x7F || wch == 127) {    // Multi-byte character or custom bullet
-			TTF::Render_Style style = get_chinese_ttf_style(font_index);
+			TTF::Render_Style style = get_chinese_ttf_style(this);
 			int w = TTF::get_char_width(wch, style);
 			if (cx >= curx && cx < curx + w) {
 				return static_cast<int>(saved_text - start);    // Adjust based on string parsing logic
@@ -1159,6 +1159,10 @@ void FontManager::add_font(const char* name, const File_spec& fname0, int index,
 
 	auto font = std::make_shared<Font>(fname0, index, hlead, vlead);
 
+	if (strstr(name, "END") || strstr(name, "MENU") || strstr(name, "GUARDIAN") || strstr(name, "INTRO") || strstr(name, "AT") || strstr(name, "CREDITS") || strstr(name, "NAV") || strstr(name, "HOT")) {
+		font->set_force_not_book(true);
+	}
+
 	fonts[name] = font;
 }
 
@@ -1175,6 +1179,10 @@ void FontManager::add_font(const char* name, const File_spec& fname0, const File
 	remove_font(name);
 
 	auto font = std::make_shared<Font>(fname0, fname1, index, hlead, vlead);
+
+	if (strstr(name, "END") || strstr(name, "MENU") || strstr(name, "GUARDIAN") || strstr(name, "INTRO") || strstr(name, "AT") || strstr(name, "CREDITS") || strstr(name, "NAV") || strstr(name, "HOT")) {
+		font->set_force_not_book(true);
+	}
 
 	fonts[name] = font;
 }
