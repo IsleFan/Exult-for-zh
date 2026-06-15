@@ -188,13 +188,15 @@ namespace TTF {
             if (core_color != -1) break;
         }
         
+        int final_color = (core_color != -1) ? core_color : ((best_count > 0) ? best_color : 254);
+        
         // Always update colors!
         if (!is_book) {
-            cached_fg = (best_count > 0) ? best_color : 254;
+            cached_fg = final_color;
             cached_bg = 255;
         } else {
             if (core_color != -1) {
-                cached_fg = best_color; // Colored book text (e.g. spell names if they use a colored book font)
+                cached_fg = final_color; // Colored book text (e.g. spell names if they use a colored book font)
             } else {
                 cached_fg = 255; // Pure black font, force black
             }
