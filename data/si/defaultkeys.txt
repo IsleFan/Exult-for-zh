@@ -3,6 +3,7 @@
 Alt-KP+		brighter
 Alt-KP- 	darker
 Esc		close_or_menu
+ENTER	interact_forward
 
 right		walk_east	# Run east
 left		walk_west	# Run west

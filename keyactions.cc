@@ -504,6 +504,81 @@ void ActionUseHealingItems(const int* params) {
 	}
 }
 
+void ActionInteractForward(const int* params) {
+	ignore_unused_variable_warning(params);
+	std::cout << "[Debug] ActionInteractForward triggered!" << std::endl;
+
+	Game_window* gwin = Game_window::get_instance();
+	Main_actor* avatar = gwin->get_main_actor();
+	
+	if (!avatar || gwin->main_actor_dont_move() || !gwin->main_actor_can_act()) {
+		std::cout << "[Debug] Avatar cannot move or act right now." << std::endl;
+		return;
+	}
+
+	int dir = avatar->get_dir_facing();
+	Tile_coord dest = avatar->get_tile().get_neighbor(dir);
+	std::cout << "[Debug] Avatar facing dir: " << dir << ", Target Tile: (" << dest.tx << ", " << dest.ty << ", " << dest.tz << ")" << std::endl;
+
+	int x, y;
+	gwin->get_shape_location(dest, x, y);
+
+	
+	// Adjust to the center of the tile
+	x -= c_tilesize / 2;
+	y -= c_tilesize / 2;
+
+	Game_object* best_obj = nullptr;
+	int best_score = -1;
+
+	// We use a 3-tile radius around the Avatar, and filter by facing direction.
+	// This creates a generous "cone" of interaction in front of the player.
+	Game_object_vector vec;
+	Game_object::find_nearby(vec, avatar->get_tile(), c_any_shapenum, 3, 0); 
+
+	for (Game_object* obj : vec) {
+		if (obj && obj != avatar) {
+			// Z-axis check: ignore objects that are far above or below the Avatar
+			int dz = obj->get_tile().tz - avatar->get_tile().tz;
+			if (dz < -2 || dz > 4) continue;
+
+			int score = -1;
+			if (obj->as_actor() && !obj->as_actor()->is_in_party()) {
+				score = 100; // Target non-party NPCs
+			} else if (obj->get_info().is_door()) {
+				score = 90;  // Target doors
+			} else {
+				continue;    // Completely ignore everything else
+			}
+			
+			// Direction Check: Must be in the 45-degree cone of where the avatar is facing
+			int obj_dir = avatar->get_direction(obj);
+			int diff = std::abs(obj_dir - dir);
+			if (diff > 4) diff = 8 - diff; // Wrap around (e.g. 7 and 0 are 1 diff apart)
+			if (diff > 1) continue; // Too far off to the side or behind
+
+			// Distance Penalty: Closer objects are prioritized (15 points per tile)
+			int dist = avatar->distance(obj);
+			score -= (dist * 15);
+
+			if (score > best_score) {
+				best_score = score;
+				best_obj = obj;
+			}
+		}
+	}
+
+	if (best_obj) {
+		std::cout << "[Debug] Found best object: " << best_obj->get_name() << " with score " << best_score << std::endl;
+		// By directly calling activate(), we bypass the mouse pixel-coordinate engine completely!
+		// This guarantees that the object we found via our 3D tile search is EXACTLY the one triggered,
+		// with zero chance of missing due to transparent pixels or clicking an empty tile edge.
+		best_obj->activate();
+	}
+	// We deliberately removed the 'else' fallback. If no NPC or Door is found, 
+	// pressing the button should do absolutely nothing.
+}
+
 //  { ActionSIIntro, 0,  "Show SI intro", cheat_keys, SERPENT_ISLE },
 void ActionSIIntro(const int* params) {
 	ignore_unused_variable_warning(params);

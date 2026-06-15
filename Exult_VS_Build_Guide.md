@@ -76,3 +76,66 @@ cd C:\vcpkg
 3. **要測試遊戲的話**：
    你需要有原版 Ultima VII (黑月之門 或 巨蛇島) 的遊戲檔案。將原版遊戲資料夾內的 `STATIC` 目錄，複製到 Exult 根目錄下對應的 `blackgate` 或 `serpentisle` 資料夾中。
 4. 雙擊根目錄的 `Exult.exe`，就可以成功啟動並享受遊戲了！
+
+## 7. 常見問題與排除 (Troubleshooting)
+
+### Q: 建置時出現「找不到 v145 的建置工具 (平台工具集 = 'v145')」錯誤？
+**A:** 這是因為專案檔可能被設定為使用較新的或測試版的工具集（v145），而一般的 Visual Studio 2022 最高通常只包含 `v143` 或 `v144`。在 Visual Studio Installer 中是找不到 v145 的。
+
+**解決方法一 (重定方案目標 - 如果有的話)：**
+1. 在 Visual Studio 右側的 **「方案總管」(Solution Explorer)** 中，找到最上方的 **「方案 'Exult'」**。
+2. 對它 **按一下滑鼠右鍵**，選擇 **「重定方案目標」(Retarget solution)**。
+3. 在跳出的視窗中，確認「平台工具集」(Platform Toolset) 設定為升級到您目前的版本 (例如 v143)，然後點擊「確定」。
+
+**解決方法二 (手動更改專案屬性 - 如果找不到方法一)：**
+1. 在「方案總管」中，**按住 `Ctrl` 鍵** 並用滑鼠左鍵點選所有發生錯誤的專案（例如 `Exult`, `exult_studio`, `exconfig`, `expack`, `textpack` 等）。
+2. 對這些選取的專案 **按一下滑鼠右鍵**，選擇最下方的 **「屬性」(Properties)**。
+3. 在左側選單選擇 **「組態屬性」(Configuration Properties) -> 「一般」(General)**。
+4. （非常重要）將最上方的「組態」(Configuration) 設為 **「所有組態」(All Configurations)**，將「平台」(Platform) 設為 **「所有平台」(All Platforms)**。
+5. 在右側找到 **「平台工具集」(Platform Toolset)**，點擊旁邊的下拉選單。
+6. 選擇您目前安裝的版本，通常是 **`Visual Studio 2022 (v143)`**。
+7. 點擊「套用」並「確定」。
+
+完成後重新建置方案即可解決。
+### Q: 建置時出現一堆「沒有 xxx 的版本資料庫項目」錯誤？
+**(例如：沒有 sdl3、icu、gtk3 的版本資料庫項目)**
+
+**A:** 這個錯誤是因為您電腦上的 `vcpkg` 版本庫太舊了，找不到專案要求安裝的最新套件版本。
+
+**解決方法 (更新 vcpkg)：**
+1. 開啟終端機 (PowerShell 或命令提示字元)。
+2. 進入您原本安裝 vcpkg 的目錄 (例如 `C:\vcpkg` 或 `D:\git\vcpkg`)。
+3. 執行更新指令：
+   ```cmd
+   git pull
+   .\bootstrap-vcpkg.bat
+   ```
+4. 更新完成後，回到 Visual Studio 重新點擊「建置方案」，vcpkg 就會開始下載並編譯最新版的套件了。
+
+### Q: 建置時出現「建置 libiconv:x64-windows 失敗，原因: BUILD_FAILED」？
+**A:** 這是 Windows 上使用 vcpkg 非常知名的問題。`libiconv` 等依賴 MSYS2 的套件在編譯時，會去解析編譯器 (`cl.exe`) 的輸出訊息。如果您的編譯器吐出中文訊息，MSYS2 讀不懂就會直接報錯失敗。更麻煩的是，只要您安裝了中文套件，編譯器就會強制使用中文輸出。
+
+**解決方法 (強制編譯器說英文)：**
+1. 開啟 **Visual Studio Installer**。
+2. 找到您的 Visual Studio 2022，點擊 **「修改」(Modify)**。
+3. 在上方標籤頁切換到 **「語言套件」(Language packs)**。
+4. **【關鍵步驟】取消勾選「繁體中文」**，並且**只勾選「英文」(English)**。
+5. 點擊「修改」並等待解除安裝中文套件完成。
+6. 重新開啟 Visual Studio，再次建置方案即可順利通過。
+### Q: 已經切換英文介面了，建置時卻還是出現奇怪的路徑錯誤或 libtool 崩潰？
+**(例如出現 `Is a directory`, `missing source filename`, 或 `BUILD_FAILED`)**
+
+**A:** 這是開發者自訂環境時最容易踩到的「終極地雷」。如果您曾經為了方便，在 Windows 登錄檔中設定了 `AutoRun` 腳本（例如每次開 cmd 自動載入 `doskey` 快捷鍵或 Anaconda 環境），每次呼叫編譯器時，這些腳本的畫面輸出字串就會被硬塞進編譯指令裡，導致指令全毀。vcpkg 官方亦明文表示不支援有修改 AutoRun 的環境。
+
+**解決方法 (清除 AutoRun 登錄檔)：**
+1. 點擊 Windows 開始按鈕，搜尋 `cmd`。
+2. 對著「命令提示字元」按一下滑鼠右鍵，選擇 **「以系統管理員身分執行」**。
+3. 貼上以下指令並按 Enter 執行：
+   ```cmd
+   reg delete "HKLM\Software\Microsoft\Command Processor" /v AutoRun /f
+   ```
+4. 如果有設定在目前使用者層級，也請執行：
+   ```cmd
+   reg delete "HKCU\Software\Microsoft\Command Processor" /v AutoRun /f
+   ```
+5. 出現「作業順利完成」後，回到 Visual Studio 重新建置方案即可順利通過。
