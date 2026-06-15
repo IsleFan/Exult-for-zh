@@ -925,9 +925,12 @@ void BG_Game::scene_guardian() {
 				const int txt_height = font->get_text_height();
 				int       txt_ypos   = gwin->get_height() - txt_height - 16;
 
+				int       clear_ypos   = txt_ypos - 8;
+				int       clear_height = gwin->get_height() - clear_ypos;
+
 				// backup text area
-				unique_ptr<Image_buffer> backup3(win->create_buffer(win->get_full_width(), txt_height));
-				win->get(backup3.get(), win->get_start_x(), txt_ypos);
+				unique_ptr<Image_buffer> backup3(win->create_buffer(win->get_full_width(), clear_height));
+				win->get(backup3.get(), win->get_start_x(), clear_ypos);
 
 				// Lipsynching
 				int            eye_frame      = 3;
@@ -963,7 +966,7 @@ void BG_Game::scene_guardian() {
 				};
 				auto DrawSpeech = [&]() {
 					// Erase text
-					win->put(backup3.get(), win->get_start_x(), txt_ypos);
+					win->put(backup3.get(), win->get_start_x(), clear_ypos);
 					// Erase and redraw eyes
 					EraseAndDraw(backup2.get(), s2, guardian_eyes_shp, eye_frame, Eyes_Dist);
 					// Erase and redraw mouth
@@ -1032,7 +1035,7 @@ void BG_Game::scene_guardian() {
 				WAITDELAYCYCLE6(1000);
 				win->ShowFillGuardBand();
 
-				win->put(backup3.get(), 0, txt_ypos);
+				win->put(backup3.get(), win->get_start_x(), clear_ypos);
 				win->put(cbackup.get(), centerx - s->get_xleft(), centery - s->get_yabove());
 				win->put(cbackup2.get(), centerx - s2->get_xleft(), centery - Eyes_Dist - s2->get_yabove());
 				win->put(cbackup3.get(), centerx - s3->get_xleft(), centery - Forehead_Dist - s3->get_yabove());
