@@ -34,7 +34,7 @@
 
 *   `<font_size_dialog>`：**對話字型大小 (預設值: `15`)**
     *   說明：NPC 主要對話與選單的文字大小。
-*   `<fg_color_dialog>`：**對話字體顏色 (預設值: `-1`)**
+*   `<font_color_dialog>`：**對話字體顏色 (預設值: `-1`)**
     *   說明：設定一般對話的字體顏色（填寫 0~255 的色盤編號）。`-1` 代表使用系統自動抓色。
 *   `<letter_spacing>`：**字元間距 (預設值: `0`)**
     *   說明：中文字元之間的水平間隔。可設定為負數（例如 `-1`）讓文字排列更緊密。
@@ -55,7 +55,7 @@
 
 *   `<font_size_bark>`：**頭頂與標籤字型大小 (預設值: `15`)**
     *   說明：專門控制點擊物件時浮現的名稱，以及 NPC 在地圖上走動時頭頂彈出的對話氣泡大小。若未設定，將繼承對話字型的大小。其餘陰影與間距參數則與上述「NPC 對話」共用。
-*   `<fg_color_bark>`：**飄字顏色 (預設值: `-1`)**
+*   `<font_color_bark>`：**飄字顏色 (預設值: `-1`)**
     *   說明：設定飄字（Bark）的專屬顏色。
 
 ### 4. 書本與卷軸字型設定 (Book / Scroll)
@@ -63,7 +63,7 @@
 為了讓書本與卷軸呈現不同的閱讀體驗（例如移除陰影、縮小字體），你可以針對書本獨立設定參數。只需在原本的參數名稱後加上 `_book` 即可：
 
 *   `<font_size_book>`：書本字型大小 (預設值: `11`)
-*   `<fg_color_book>`：書本字體顏色 (預設值: `-1`)
+*   `<font_color_book>`：書本字體顏色 (預設值: `-1`)
 *   `<letter_spacing_book>`：書本字元間距 (預設值: `0`)
 *   `<font_weight_book>`：書本字體粗細 (預設值: `0`)
 *   `<shadow_type_book>`：書本陰影類型 (預設值: `-1`，建議可設為 `0` 移除陰影以符合原文書本風格)
@@ -76,7 +76,7 @@
 針對遊戲一開始守護者講話時的動畫字幕，可以進行完全獨立的設定：
 
 *   `<font_size_intro>`：開場文字大小 (預設值: 自動)
-*   `<fg_color_intro>`：開場文字顏色 (預設值: `-1` 自動抓色)
+*   `<font_color_intro>`：開場文字顏色 (預設值: `-1` 自動抓色)
 *   `<shadow_type_intro>`：開場陰影類型 (預設值: `-1` 單邊陰影)
 *   `<shadow_offset_x_intro>` / `<shadow_offset_y_intro>`：開場陰影偏移
 *   `<shadow_color_intro>`：開場陰影顏色
@@ -86,7 +86,7 @@
 結局的字體與顏色可以單獨設定，以便配合結局特有的調色盤（Palette）：
 
 *   `<font_size_ending>`：結局文字大小 (預設值: 自動)
-*   `<fg_color_ending>`：結局文字顏色 (預設值: `-1` 自動抓色，例如可設為 `134` 亮橘色)
+*   `<font_color_ending>`：結局文字顏色 (預設值: `-1` 自動抓色，例如可設為 `134` 亮橘色)
 *   `<shadow_type_ending>`：結局陰影類型 (預設值: `-1` 單邊陰影)
 *   `<shadow_offset_x_ending>` / `<shadow_offset_y_ending>`：結局陰影偏移
 *   `<shadow_color_ending>`：結局陰影顏色
@@ -115,23 +115,23 @@
 
       <!-- NPC 頭頂標籤 -->
       <font_size_bark> 14 </font_size_bark>
-      <fg_color_bark> -1 </fg_color_bark>
+      <font_color_bark> -1 </font_color_bark>
 
       <!-- 書本與卷軸 -->
       <font_size_book> 11 </font_size_book>
-      <fg_color_book> -1 </fg_color_book>
+      <font_color_book> -1 </font_color_book>
       <letter_spacing_book> 0 </letter_spacing_book>
       <font_weight_book> 0 </font_weight_book>
       <shadow_type_book> 0 </shadow_type_book>
 
       <!-- 開場動畫 -->
       <font_size_intro> 15 </font_size_intro>
-      <fg_color_intro> -1 </fg_color_intro>
+      <font_color_intro> -1 </font_color_intro>
       <shadow_type_intro> -1 </shadow_type_intro>
 
       <!-- 結局動畫 -->
       <font_size_ending> 15 </font_size_ending>
-      <fg_color_ending> 134 </fg_color_ending>
+      <font_color_ending> 134 </font_color_ending>
       <shadow_type_ending> -1 </shadow_type_ending>
     </chinese>
   </video>

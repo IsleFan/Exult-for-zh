@@ -86,7 +86,7 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 		config->value("config/video/chinese/shadow_offset_x_intro", style.shadow_offset_x, 1);
 		config->value("config/video/chinese/shadow_offset_y_intro", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color_intro", style.shadow_color, -1);
-		config->value("config/video/chinese/fg_color_intro", style.fg_color, -1);
+		config->value("config/video/chinese/font_color_intro", style.fg_color, -1);
 	} else if (is_ending) {
 		config->value("config/video/chinese/letter_spacing", style.letter_spacing, 0);
 		config->value("config/video/chinese/font_weight", style.weight, 0);
@@ -94,7 +94,7 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 		config->value("config/video/chinese/shadow_offset_x_ending", style.shadow_offset_x, 1);
 		config->value("config/video/chinese/shadow_offset_y_ending", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color_ending", style.shadow_color, -1);
-		config->value("config/video/chinese/fg_color_ending", style.fg_color, -1);
+		config->value("config/video/chinese/font_color_ending", style.fg_color, -1);
 	} else if (is_book && !is_bark) {
 		config->value("config/video/chinese/letter_spacing_book", style.letter_spacing, 0);
 		config->value("config/video/chinese/font_weight_book", style.weight, 0);
@@ -102,7 +102,7 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 		config->value("config/video/chinese/shadow_offset_x_book", style.shadow_offset_x, 1);
 		config->value("config/video/chinese/shadow_offset_y_book", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color_book", style.shadow_color, -1);
-		config->value("config/video/chinese/fg_color_book", style.fg_color, -1);
+		config->value("config/video/chinese/font_color_book", style.fg_color, -1);
 	} else {
 		config->value("config/video/chinese/letter_spacing", style.letter_spacing, 0);
 		config->value("config/video/chinese/font_weight", style.weight, 0);
@@ -111,9 +111,9 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 		config->value("config/video/chinese/shadow_offset_y", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color", style.shadow_color, -1);
 		if (is_bark) {
-			config->value("config/video/chinese/fg_color_bark", style.fg_color, -1);
+			config->value("config/video/chinese/font_color_bark", style.fg_color, -1);
 		} else {
-			config->value("config/video/chinese/fg_color_dialog", style.fg_color, -1);
+			config->value("config/video/chinese/font_color_dialog", style.fg_color, -1);
 		}
 	}
 	return style;
