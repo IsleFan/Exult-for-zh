@@ -37,6 +37,7 @@ namespace TTF {
         int shadow_offset_x;
         int shadow_offset_y;
         int shadow_color;
+        int fg_color;
     };
 }
 
@@ -69,19 +70,39 @@ static std::string get_chinese_font_path(int font_size = -1) {
 }
 
 static TTF::Render_Style get_chinese_ttf_style(Font* font) {
-	TTF::Render_Style style = {0, 0, -1, 1, 1, -1};
+	TTF::Render_Style style = {0, 0, -1, 1, 1, -1, -1};
 	if (!config) return style;
 
 	bool is_bark = Font::is_painting_bark;
-	bool is_book = (font->get_font_index() != 0 && font->get_font_index() != 7 && !font->get_force_not_book());
+	int f_idx = font->get_font_index();
+	bool is_intro = font->get_force_not_book() && (f_idx == 11 || f_idx == 3);
+	bool is_ending = font->get_force_not_book() && (f_idx == 12 || f_idx == 13 || f_idx == 14 || f_idx == 4 || f_idx == 5 || f_idx == 0);
+	bool is_book = (f_idx != 0 && f_idx != 7 && !font->get_force_not_book());
 
-	if (is_book && !is_bark) {
+	if (is_intro) {
+		config->value("config/video/chinese/letter_spacing", style.letter_spacing, 0);
+		config->value("config/video/chinese/font_weight", style.weight, 0);
+		config->value("config/video/chinese/shadow_type_intro", style.shadow_type, -1);
+		config->value("config/video/chinese/shadow_offset_x_intro", style.shadow_offset_x, 1);
+		config->value("config/video/chinese/shadow_offset_y_intro", style.shadow_offset_y, 1);
+		config->value("config/video/chinese/shadow_color_intro", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_intro", style.fg_color, -1);
+	} else if (is_ending) {
+		config->value("config/video/chinese/letter_spacing", style.letter_spacing, 0);
+		config->value("config/video/chinese/font_weight", style.weight, 0);
+		config->value("config/video/chinese/shadow_type_ending", style.shadow_type, -1);
+		config->value("config/video/chinese/shadow_offset_x_ending", style.shadow_offset_x, 1);
+		config->value("config/video/chinese/shadow_offset_y_ending", style.shadow_offset_y, 1);
+		config->value("config/video/chinese/shadow_color_ending", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_ending", style.fg_color, -1);
+	} else if (is_book && !is_bark) {
 		config->value("config/video/chinese/letter_spacing_book", style.letter_spacing, 0);
 		config->value("config/video/chinese/font_weight_book", style.weight, 0);
 		config->value("config/video/chinese/shadow_type_book", style.shadow_type, -1);
 		config->value("config/video/chinese/shadow_offset_x_book", style.shadow_offset_x, 1);
 		config->value("config/video/chinese/shadow_offset_y_book", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color_book", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_book", style.fg_color, -1);
 	} else {
 		config->value("config/video/chinese/letter_spacing", style.letter_spacing, 0);
 		config->value("config/video/chinese/font_weight", style.weight, 0);
@@ -89,6 +110,11 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 		config->value("config/video/chinese/shadow_offset_x", style.shadow_offset_x, 1);
 		config->value("config/video/chinese/shadow_offset_y", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color", style.shadow_color, -1);
+		if (is_bark) {
+			config->value("config/video/chinese/font_color_bark", style.fg_color, -1);
+		} else {
+			config->value("config/video/chinese/font_color_dialog", style.fg_color, -1);
+		}
 	}
 	return style;
 }
@@ -814,6 +840,18 @@ int Font::get_chinese_font_size() {
 		if (config) config->value("config/video/chinese/font_size_bark", user_size, 0);
 		return user_size > 0 ? user_size : 15;    // Bark default
 	}
+	
+	bool is_intro = force_not_book && (font_index == 11 || font_index == 3);
+	bool is_ending = force_not_book && (font_index == 12 || font_index == 13 || font_index == 14 || font_index == 4 || font_index == 5 || font_index == 0);
+
+	if (is_intro) {
+		if (config) config->value("config/video/chinese/font_size_intro", user_size, 0);
+		if (user_size > 0) return user_size;
+	} else if (is_ending) {
+		if (config) config->value("config/video/chinese/font_size_ending", user_size, 0);
+		if (user_size > 0) return user_size;
+	}
+
 	if (font_index == 0 || force_not_book) {
 		if (config) config->value("config/video/chinese/font_size_dialog", user_size, 0);
 		return user_size > 0 ? user_size : 15;    // Dialogues

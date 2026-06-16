@@ -1682,6 +1682,36 @@ int Usecode_internal::get_user_choice_num() {
 	int y;    // Get click.
 	int choice_num;
 	int hover_index = 0;
+	int num_ans = conv->get_num_answers();
+	if (num_ans > 0) {
+		int mouse_x = Mouse::mouse()->get_mousex();
+		int mouse_y = Mouse::mouse()->get_mousey();
+		long min_dist_sq = -1;
+		int closest_index = 0;
+
+		for (int i = 0; i < num_ans; i++) {
+			TileRect rect = conv->get_choice_rect(i);
+			if (rect.w > 0) {
+				int cx = rect.x + rect.w / 2;
+				int cy = rect.y + rect.h / 2;
+				long dist_sq = (cx - mouse_x) * (cx - mouse_x) + (cy - mouse_y) * (cy - mouse_y);
+				if (min_dist_sq == -1 || dist_sq < min_dist_sq) {
+					min_dist_sq = dist_sq;
+					closest_index = i;
+				}
+			}
+		}
+
+		hover_index = closest_index;
+		TileRect rect = conv->get_choice_rect(hover_index);
+		if (rect.w > 0) {
+			int cx = rect.x + rect.w / 2;
+			int cy = rect.y + rect.h / 2;
+			int sx, sy;
+			gwin->get_win()->game_to_screen(cx, cy, gwin->get_fastmouse(), sx, sy);
+			SDL_WarpMouseInWindow(gwin->get_win()->get_screen_window(), (float)sx, (float)sy);
+		}
+	}
 	do {
 		char chr;         // Allow '1', '2', etc.
 		int keycode = 0;

@@ -188,13 +188,15 @@ namespace TTF {
             if (core_color != -1) break;
         }
         
+        int final_color = (core_color != -1) ? core_color : ((best_count > 0) ? best_color : 254);
+        
         // Always update colors!
         if (!is_book) {
-            cached_fg = (best_count > 0) ? best_color : 254;
+            cached_fg = final_color;
             cached_bg = 255;
         } else {
             if (core_color != -1) {
-                cached_fg = best_color; // Colored book text (e.g. spell names if they use a colored book font)
+                cached_fg = final_color; // Colored book text (e.g. spell names if they use a colored book font)
             } else {
                 cached_fg = 255; // Pure black font, force black
             }
@@ -206,8 +208,11 @@ namespace TTF {
         if (!win) return 16;
         if (wch == 127) {
             update_colors(sample_shape, is_book);
-            unsigned char fg_color = cached_fg;
+            unsigned char fg_color = (style.fg_color >= 0 && style.fg_color <= 255) ? style.fg_color : cached_fg;
             unsigned char bg_color = cached_bg;
+            if (style.shadow_color >= 0 && style.shadow_color <= 255) {
+                bg_color = style.shadow_color;
+            }
             if (trans) {
                 fg_color = trans[fg_color];
                 bg_color = trans[bg_color];
@@ -250,17 +255,18 @@ namespace TTF {
         int top_y = yoff_original + ascender - face->glyph->bitmap_top;
         int left_x = x + face->glyph->bitmap_left;
 
-        unsigned char fg_color = cached_fg;
+        unsigned char fg_color = (style.fg_color >= 0 && style.fg_color <= 255) ? style.fg_color : cached_fg;
         unsigned char bg_color = cached_bg;
+        
+        // Shadow color override
+        if (style.shadow_color >= 0 && style.shadow_color <= 255) {
+            bg_color = style.shadow_color;
+        }
+
         if (trans) {
             fg_color = trans[fg_color];
             bg_color = trans[bg_color];
         }
-
-            // Shadow color override
-            if (style.shadow_color >= 0 && style.shadow_color <= 255) {
-                bg_color = style.shadow_color;
-            }
 
             // Draw outline/shadow first
             if (cached_bg != 0 && bg_color != 0 && style.shadow_type != 0) {

@@ -80,7 +80,7 @@ const struct Action {
 		return get_text_msg(desg_msg_id - msg_file_start);
 	}
 
-	enum {
+	enum KeyType {
 		dont_show = 0,
 		normal_keys,
 		cheat_keys,
@@ -113,6 +113,7 @@ const struct Action {
 		{            "BRIGHTER",           ActionBrighter,           nullptr, 0x80e,  Action::normal_keys,         NONE,  true,  true,  true, false},
 		{              "DARKER",             ActionDarker,           nullptr, 0x80f,  Action::normal_keys,         NONE,  true,  true,  true, false},
 		{   "TOGGLE_FULLSCREEN",         ActionFullscreen,           nullptr, 0x810,  Action::normal_keys,         NONE,  true,  true,  true, false},
+		{    "INTERACT_FORWARD",    ActionInteractForward,           nullptr, 0x890,  Action::normal_keys,         NONE, false, false,  true, false},
 
 		{             "USEITEM",            ActionUseItem,           nullptr, 0x811,    Action::dont_show,         NONE, false, false, false, false},
 		{             "USEFOOD",            ActionUseFood,           nullptr, 0x812,  Action::normal_keys,         NONE, false, false, false, false},
@@ -505,6 +506,18 @@ void KeyBinder::ParseText(char* text, int len) {
 		ParseLine(ptr, currentLineInBlock);    // Pass line number
 		ptr = end + 1;
 	}
+
+	// --- START FORCED BINDING ---
+	// By-pass the user's cached defaultkeys.txt by forcibly injecting this here
+	ExultKey   k;
+	ActionType a;
+	k.key    = SDLK_RETURN;
+	k.mod    = 0;
+	a.action = actions["INTERACT_FORWARD"];
+	a.params[0] = 0;
+	bindings[k] = a;
+	std::cout << "[Debug] Force bound ENTER to INTERACT_FORWARD" << std::endl;
+	// --- END FORCED BINDING ---
 }
 
 static void skipspace(string& s) {

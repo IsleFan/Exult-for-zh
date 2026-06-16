@@ -51,6 +51,7 @@ void ActionStats(const int* params);
 void ActionCombatStats(const int* params);
 void ActionFaceStats(const int* params);
 void ActionUseHealingItems(const int* params);
+void ActionInteractForward(const int* params);
 
 void ActionSIIntro(const int* params);
 void ActionEndgame(const int* params);
