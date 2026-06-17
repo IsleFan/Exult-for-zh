@@ -19,6 +19,7 @@ void Func0334 shape#(0x334) ()
 	var var0008;
 	var var0009;
 	var var000A;
+	var var_chinese = "";
 	var var000B;
 
 	var0000 = item;
@@ -81,38 +82,66 @@ labelFunc0334_0172:
 	var0009 = Func0908();
 	if (!(var0001 > 0x0041)) goto labelFunc0334_018B;
 	var000A = "This is not a valid plaque ";
+
+	var_chinese = "這不是一個有效的金屬牌";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_018B:
 	if (!(var0001 == 0x0000)) goto labelFunc0334_01AD;
 	var000A = ["important", "event", "to|be", "recorded", "here"];
+
+	var_chinese = "將被記錄於此的重要事件";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_01AD:
 	if (!(var0001 == 0x0001)) goto labelFunc0334_01CF;
 	var000A = ["tomb|of", "kronos", "forgotten", "but|not", "forgiven"];
+
+	var_chinese = "克羅諾斯之墓
+被遺忘但不可原諒";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_01CF:
 	if (!(var0001 == 0x0002)) goto labelFunc0334_01E8;
 	var000A = ["royal", "(+tre"];
+
+	var_chinese = "皇家劇院";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_01E8:
 	if (!(var0001 == 0x0003)) goto labelFunc0334_0201;
 	var000A = ["FELLOWSHIP", "HALL"];
+
+	var_chinese = "友誼會大廳";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0201:
 	if (!(var0001 == 0x0004)) goto labelFunc0334_021D;
 	var000A = ["TEST", "OF", "STRENGTH"];
+
+	var_chinese = "力量測試";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_021D:
 	if (!(var0001 == 0x0005)) goto labelFunc0334_0236;
 	var000A = ["MEDITATION", "RETREAT"];
+
+	var_chinese = "冥想靜修所";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0236:
 	if (!(var0001 == 0x0006)) goto labelFunc0334_024F;
 	var000A = ["SHRINE OF", "THE CODEX"];
+
+	var_chinese = "法典神殿";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_024F:
 	if (!(var0001 == 0x0007)) goto labelFunc0334_026E;
 	var000A = ["hammer", "here", "to", "enter"];
+
+	var_chinese = "敲擊此處進入";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_026E:
 	if (!(var0001 == 0x0008)) goto labelFunc0334_029C;
@@ -122,158 +151,276 @@ labelFunc0334_026E:
 labelFunc0334_029C:
 	if (!(var0001 == 0x0009)) goto labelFunc0334_02BB;
 	var000A = ["a|golden", "ring|of", "tru(", "faces|()"];
+
+	var_chinese = "真相的金戒指朝向你";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_02BB:
 	if (!(var0001 == 0x000A)) goto labelFunc0334_02DA;
 	var000A = ["grasp", "not", "at", "(r+ds"];
+
+	var_chinese = "不要抓住線程";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_02DA:
 	if (!(var0001 == 0x000B)) goto labelFunc0334_02FC;
 	var000A = ["(e", "royal|mint", "shall|not", "hold|()", "back"];
+
+	var_chinese = "皇家鑄幣廠不會阻擋你";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_02FC:
 	if (!(var0001 == 0x000C)) goto labelFunc0334_030F;
 	var000A = "GO THIS WAY";
+
+	var_chinese = "走這邊";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_030F:
 	if (!(var0001 == 0x000D)) goto labelFunc0334_032B;
 	var000A = ["DO NOT", "GO", "THIS WAY"];
+
+	var_chinese = "不要走這邊";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_032B:
 	if (!(var0001 == 0x000E)) goto labelFunc0334_034A;
 	var000A = ["DO NOT GO", "IN", "THE", "WOODEN DOOR"];
+
+	var_chinese = "不要進入木門";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_034A:
 	if (!(var0001 == 0x000F)) goto labelFunc0334_036C;
 	var000A = ["DO NOT", "GO IN", "THE", "WINDOWED", "DOOR"];
+
+	var_chinese = "不要進入有窗戶的門";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_036C:
 	if (!(var0001 == 0x0010)) goto labelFunc0334_038E;
 	var000A = ["GO", "IN", "THE", "STEEL", "DOOR"];
+
+	var_chinese = "進入鋼鐵門";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_038E:
 	if (!(var0001 == 0x0011)) goto labelFunc0334_03AD;
 	var000A = ["DO NOT", "GO", "IN THE", "GREEN DOOR"];
+
+	var_chinese = "不要進入綠色門";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_03AD:
 	if (!(var0001 == 0x0012)) goto labelFunc0334_03CF;
 	var000A = ["ONLY", "ONE", "OF THESE", "SIGNS", "IS TRUE"];
+
+	var_chinese = "這些招牌中只有一個是真的";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_03CF:
 	if (!(var0001 == 0x0013)) goto labelFunc0334_03EE;
 	var000A = ["AT LEAST", "TWO SIGNS", "ARE", "FALSE"];
+
+	var_chinese = "至少有兩個招牌是假的";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_03EE:
 	if (!(var0001 == 0x0014)) goto labelFunc0334_0407;
 	var000A = ["NATIONAL", "BRANCH"];
+
+	var_chinese = "國家分部";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0407:
 	if (!(var0001 == 0x0015)) goto labelFunc0334_0423;
 	var000A = ["ART THOU", "AN", "AVATAR?"];
+
+	var_chinese = "你是聖者嗎？";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0423:
 	if (!(var0001 == 0x0016)) goto labelFunc0334_0442;
 	var000A = ["RESERVE", "THY", "SEATS", "NOW!"];
+
+	var_chinese = "現在就預訂你的座位！";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0442:
 	if (!(var0001 == 0x0017)) goto labelFunc0334_0464;
 	var000A = ["THE BONES OF", "ZOG:", "EARLIEST", "BRITANNIAN", "FOSSIL"];
+
+	var_chinese = "佐格之骨：最早的不列顛尼亞化石";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0464:
 	if (!(var0001 == 0x0018)) goto labelFunc0334_0483;
 	var000A = ["SWAMP BOOTS", "ONCE WORN", "BY THE", "AVATAR"];
+
+	var_chinese = "聖者曾經穿過的沼澤靴";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0483:
 	if (!(var0001 == 0x0019)) goto labelFunc0334_04A2;
 	var000A = ["MANITTZI'S", "HARPSICORD", "USED WHILE", "COMPOSING"];
+
+	var_chinese = "曼尼茲作曲時使用的羽管鍵琴";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_04A2:
 	if (!(var0001 == 0x001A)) goto labelFunc0334_04BE;
 	var000A = ["|ANIA", "OF", "SPRING|"];
+
+	var_chinese = "春天的阿尼亞";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_04BE:
 	if (!(var0001 == 0x001B)) goto labelFunc0334_04DD;
 	var000A = ["|marney|", "skara|braes", "fine,", "flower"];
+
+	var_chinese = "瑪妮
+史卡拉布萊最美的花朵";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_04DD:
 	if (!(var0001 == 0x001C)) goto labelFunc0334_04F9;
 	var000A = ["(e", "wayfarers", "inn"];
+
+	var_chinese = "旅人客棧";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_04F9:
 	if (!(var0001 == 0x001D)) goto labelFunc0334_0515;
 	var000A = ["(e", "blue", "boar"];
+
+	var_chinese = "藍野豬酒館";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0515:
 	if (!(var0001 == 0x001E)) goto labelFunc0334_052E;
 	var000A = ["royal", "museum"];
+
+	var_chinese = "皇家博物館";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_052E:
 	if (!(var0001 == 0x001F)) goto labelFunc0334_054A;
 	var000A = ["(e", "music", "hall"];
+
+	var_chinese = "音樂廳";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_054A:
 	if (!(var0001 == 0x0020)) goto labelFunc0334_0563;
 	var000A = ["town", "hall"];
+
+	var_chinese = "市政廳";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0563:
 	if (!(var0001 == 0x0021)) goto labelFunc0334_057C;
 	var000A = ["royal", "mint"];
+
+	var_chinese = "皇家鑄幣廠";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_057C:
 	if (!(var0001 == 0x0022)) goto labelFunc0334_059E;
 	var000A = ["THE", "THRONE", "OF", "MANY", "CHANGES"];
+
+	var_chinese = "萬變王座";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_059E:
 	if (!(var0001 == 0x0023)) goto labelFunc0334_05BD;
 	var000A = ["THE", "THRONE", "OF", "VIRTUE"];
+
+	var_chinese = "美德王座";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_05BD:
 	if (!(var0001 == 0x0024)) goto labelFunc0334_05D9;
 	var000A = ["LORD", "BRITISH'S", "MUSKET"];
+
+	var_chinese = "不列顛王的火槍";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_05D9:
 	if (!(var0001 == 0x0025)) goto labelFunc0334_05F8;
 	var000A = ["THE", "STONES", "OF", "VIRTUE"];
+
+	var_chinese = "美德之石";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_05F8:
 	if (!(var0001 == 0x0026)) goto labelFunc0334_061A;
 	var000A = ["SILVER", "HORN", "ONCE USED", "BY THE", "GARGOYLES"];
+
+	var_chinese = "石像鬼曾經使用過的銀號角";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_061A:
 	if (!(var0001 == 0x0027)) goto labelFunc0334_0639;
 	var000A = ["TO SUMMON", "THE", "SILVER", "SNAKES"];
+
+	var_chinese = "召喚銀蛇";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0639:
 	if (!(var0001 == 0x0028)) goto labelFunc0334_065B;
 	var000A = ["THE ANKH", "", "SYMBOL OF", "THE", "VIRTUES"];
+
+	var_chinese = "十字聖架 —— 美德的象徵";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_065B:
 	if (!(var0001 == 0x0029)) goto labelFunc0334_0674;
 	var000A = ["LORD", "BRITISH"];
+
+	var_chinese = "不列顛王";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0674:
 	if (!(var0001 == 0x002A)) goto labelFunc0334_068D;
 	var000A = ["THE", "AVATAR"];
+
+	var_chinese = "聖者";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_068D:
 	if (!(var0001 == 0x002B)) goto labelFunc0334_06A9;
 	var000A = ["THE", "VORTEX", "CUBE"];
+
+	var_chinese = "漩渦方塊";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_06A9:
 	if (!(var0001 == 0x002C)) goto labelFunc0334_06CB;
 	var000A = ["THE", "RUNES", "OF", "THE", "VIRTUES"];
+
+	var_chinese = "美德盧恩石";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_06CB:
 	if (!(var0001 == 0x002D)) goto labelFunc0334_06ED;
 	var000A = ["(e", "game", "of", "knights", "bridge"];
+
+	var_chinese = "騎士橋遊戲";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_06ED:
 	if (!(var0001 == 0x002E)) goto labelFunc0334_0706;
 	var000A = ["DO NOT", "ENTER"];
+
+	var_chinese = "禁止進入";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0706:
 	if (!(var0001 == 0x002F)) goto labelFunc0334_0728;
 	var000A = ["blow", "horn", "to", "summon", "ferry"];
+
+	var_chinese = "吹響號角以召喚渡船";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0728:
 	if (!(var0001 == 0x0030)) goto labelFunc0334_07F7;
@@ -288,77 +435,149 @@ labelFunc0334_0728:
 	goto labelFunc0334_07F7;
 labelFunc0334_07DC:
 	var000A = ["THE", "THRONE", "ROOM", "OF", "LORD", "BRITISH"];
+
+	var_chinese = "不列顛王的王座室";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_07F7:
 	if (!(var0001 == 0x0031)) goto labelFunc0334_0819;
 	var000A = ["SEE IF", "THOU ART", "THE NEXT", "LORD OF", "BRITANNIA"];
+
+	var_chinese = "看看你是否是下一任不列顛尼亞之王";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0819:
 	if (!(var0001 == 0x0032)) goto labelFunc0334_083B;
 	var000A = ["in", "lovi*", "memory", "of", "mama"];
+
+	var_chinese = "懷著對媽媽的愛與回憶";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_083B:
 	if (!(var0001 == 0x0033)) goto labelFunc0334_0857;
 	var000A = ["BEWARE", "THE", "DRAGON"];
+
+	var_chinese = "小心惡龍";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0857:
 	if (!(var0001 == 0x0034)) goto labelFunc0334_0879;
 	var000A = ["for", "(e", "love", "of", "marney"];
+
+	var_chinese = "為了瑪妮的愛";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0879:
 	if (!(var0001 == 0x0035)) goto labelFunc0334_089B;
 	var000A = ["|j|r|r|t|", "a|gr+t", "man", "a|gr+t", "writer"];
+
+	var_chinese = "J.R.R.T.
+偉大的人，偉大的作家";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_089B:
 	if (!(var0001 == 0x0036)) goto labelFunc0334_08B7;
 	var000A = ["THE", "BRITANNIAN", "LENS"];
+
+	var_chinese = "不列顛尼亞透鏡";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_08B7:
 	if (!(var0001 == 0x0037)) goto labelFunc0334_08D3;
 	var000A = ["THE", "GARGOYLE", "LENS"];
+
+	var_chinese = "石像鬼透鏡";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_08D3:
 	if (!(var0001 == 0x0038)) goto labelFunc0334_08EC;
 	var000A = ["EX", "POR"];
+
+	var_chinese = "開鎖 (Ex Por)";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_08EC:
 	if (!(var0001 == 0x0039)) goto labelFunc0334_090B;
 	var000A = ["(e", "te,", "of", "love"];
+
+	var_chinese = "愛之測試";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_090B:
 	if (!(var0001 == 0x003A)) goto labelFunc0334_092A;
 	var000A = ["(e", "te,", "of", "courage"];
+
+	var_chinese = "勇氣測試";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_092A:
 	if (!(var0001 == 0x003B)) goto labelFunc0334_0949;
 	var000A = ["nor(", "is", "(e", "way"];
+
+	var_chinese = "往北走";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0949:
 	if (!(var0001 == 0x003C)) goto labelFunc0334_0965;
 	var000A = ["tru(", "is", "tru("];
+
+	var_chinese = "真相就是真相";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0965:
 	if (!(var0001 == 0x003D)) goto labelFunc0334_0984;
 	var000A = ["only", "app+rances", "are", "deceptive"];
+
+	var_chinese = "只有外表是騙人的";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0984:
 	if (!(var0001 == 0x003E)) goto labelFunc0334_099D;
 	var000A = ["well", "done"];
+
+	var_chinese = "做得好";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_099D:
 	if (!(var0001 == 0x003F)) goto labelFunc0334_09BC;
 	var000A = ["(e", "keys", "of", "tru("];
+
+	var_chinese = "真相之鑰";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_09BC:
 	if (!(var0001 == 0x0040)) goto labelFunc0334_09DB;
 	var000A = ["tru,|not", "always|(e", "obvious", "path"];
+
+	var_chinese = "真相並不總是顯而易見的";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_09DB:
 	if (!(var0001 == 0x0041)) goto labelFunc0334_09FA;
 	var000A = ["(ou", "do,|not", "wish|to", "see|(is"];
+
+	var_chinese = "你不會想看這個的";
+
 	goto labelFunc0334_09FA;
 labelFunc0334_09FA:
+	var has_magic_book = UI_count_objects(0xFE9B, 0x0282, 149, 0);
+	
+	// 為了方便測試：如果聖者身上沒有，就直接發一本給他！
+	if (has_magic_book == 0) {
+		UI_add_party_items(1, 0x0282, 149, 0, false);
+		has_magic_book = 1;
+	}
+	
+	if (has_magic_book > 0 && var_chinese != "") {
+		UI_show_npc_face(UI_get_avatar_ref(), 0);
+		say(var_chinese);
+	}
+	
 	UI_display_runes(0x0033, var000A);
+	
+	if (has_magic_book > 0 && var_chinese != "") {
+		UI_remove_npc_face(UI_get_avatar_ref());
+	}
 	return;
 }
 

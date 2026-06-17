@@ -392,14 +392,15 @@ void Conversation::show_npc_message(const char* msg) {
 		gwin->get_tqueue()->resume(SDL_GetTicks());
 	}
 	Npc_face_info* info = face_info[last_face_shown];
-	const int      font = info->large_face ? 7 : 0;    // Use red for Guardian, snake.
+	int font = info->large_face ? 7 : 0;
+	if (info->large_face) {
+		int pal_idx = gwin->get_pal()->get_palette_index();
+		if (gwin->get_pal()->get_brightness() < 60 || pal_idx == 2 || pal_idx == 7 || pal_idx == 11 || pal_idx == 12) {
+			font = 0;
+		}
+	}
 	info->cur_text      = "";
-	const TileRect& box = info->text_rect;
-	//	gwin->paint(box);        // Clear what was there before.
-	//	paint_faces();
-	gwin->paint();
-	int height;    // Break at punctuation.
-	
+
 	bool has_chinese = false;
 	for (const char* p = msg; p && *p; p++) {
 		if (static_cast<unsigned char>(*p) >= 0x80) {
@@ -407,17 +408,37 @@ void Conversation::show_npc_message(const char* msg) {
 			break;
 		}
 	}
+
 	int line_height = sman->get_text_line_height(0);
 	if (has_chinese) {
 		line_height = std::max(line_height, 22);
 	}
+
+	if (info->large_face && has_chinese) {
+		info->text_rect.x = 8;
+		info->text_rect.w = gwin->get_width() - 16;
+		
+		int needed_h = line_height * 2;
+		if (info->text_rect.h < needed_h) {
+			info->text_rect.h = needed_h;
+			info->text_rect.y = gwin->get_height() - needed_h - 4;
+		}
+	}
+
+	const TileRect& box = info->text_rect;
+	//	gwin->paint(box);        // Clear what was there before.
+	//	paint_faces();
+	gwin->paint();
+	int height;    // Break at punctuation.
+	
 	int render_box_h = 4 * line_height;
 	if (render_box_h > box.h) {
 		render_box_h = box.h;
 	}
 
+	int shading = info->large_face ? -1 : gwin->get_text_bg();
 	/* NOTE:  The original centers text for Guardian, snake.    */
-	while ((height = sman->paint_text_box(font, msg, box.x, box.y, box.w, render_box_h, -1, true, info->large_face, gwin->get_text_bg()))
+	while ((height = sman->paint_text_box(font, msg, box.x, box.y, box.w, render_box_h, -1, true, info->large_face, shading))
 		   < 0) {
 		// More to do?
 		info->cur_text = string(msg, -height);
@@ -505,7 +526,7 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 			line_height = cjk_min;
 		}
 	}
-	const int space_width = sman->get_text_width(0, " ");
+	const int space_width = sman->get_text_width(0, " ", has_chinese);
 
 	// Get main actor's portrait, checking for Petra flag.
 	int shape = Shapeinfo_lookup::GetFaceReplacement(0);
@@ -564,7 +585,7 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 		char text[256];
 		text[0] = 127;    // A circle.
 		strcpy(&text[1], choices[i]);
-		const int width = sman->get_text_width(0, text);
+		const int width = sman->get_text_width(0, text, has_chinese);
 		if (temp_x > 0 && temp_x + width >= test_tbox_w) {
 			temp_x = 0;
 			temp_y += temp_line_step;
@@ -599,7 +620,7 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 		char text[256];
 		text[0] = 127;    // A circle.
 		strcpy(&text[1], choices[i]);
-		const int width = sman->get_text_width(0, text);
+		const int width = sman->get_text_width(0, text, has_chinese);
 		if (x > 0 && x + width >= tbox.w) {
 			// Start a new line.
 			x = 0;
@@ -727,10 +748,16 @@ void Conversation::paint_faces(
 		}
 		if (text) {    // Show text too?
 			const TileRect& box = finfo->text_rect;
-			// Use red for Guardian, snake.
-			const int font = finfo->large_face ? 7 : 0;
+			int font = finfo->large_face ? 7 : 0;
+			if (finfo->large_face) {
+				int pal_idx = gwin->get_pal()->get_palette_index();
+				if (gwin->get_pal()->get_brightness() < 60 || pal_idx == 2 || pal_idx == 7 || pal_idx == 11 || pal_idx == 12) {
+					font = 0;
+				}
+			}
+			int shading = finfo->large_face ? -1 : gwin->get_text_bg();
 			sman->paint_text_box(
-					font, finfo->cur_text.c_str(), box.x, box.y, box.w, box.h, -1, true, finfo->large_face, gwin->get_text_bg());
+					font, finfo->cur_text.c_str(), box.x, box.y, box.w, box.h, -1, true, finfo->large_face, shading);
 		}
 	}
 }

@@ -76,6 +76,8 @@ public:
 	void paint() override;
 	TileRect get_rect() const override;
 	bool handle_kbd_event(void* ev) override;
+	bool mousewheel_up(int mx, int my) override;
+	bool mousewheel_down(int mx, int my) override;
 };
 
 /*

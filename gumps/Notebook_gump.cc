@@ -997,6 +997,22 @@ bool Notebook_gump::word_exceeds_line_length(const string& text, int offset, int
 }
 
 void One_note::add_text_with_line_breaks(const std::string& input) {
+	// If the text contains any non-ASCII characters (e.g. CJK/UTF-8), bypass the legacy 
+	// byte-by-byte wrapping logic to prevent corrupting the multi-byte sequences.
+	// The underlying paint_text_box renderer already natively supports TTF CJK line wrapping.
+	bool has_cjk = false;
+	for (char c : input) {
+		if (static_cast<unsigned char>(c) >= 0x80) {
+			has_cjk = true;
+			break;
+		}
+	}
+	
+	if (has_cjk) {
+		this->text = input;
+		return;
+	}
+
 	Shape_manager* sman      = Shape_manager::get_instance();
 	TileRect       box       = Get_text_area(false, false);
 	int            max_width = box.w;

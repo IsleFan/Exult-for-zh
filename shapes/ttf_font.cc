@@ -130,11 +130,34 @@ namespace TTF {
     int get_char_width(uint32_t wch, const Render_Style& style) {
         if (wch == 127) return 8 + style.letter_spacing; // Custom bullet width
         if (!face) return 16;
-        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO)) {
+        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO | FT_LOAD_FORCE_AUTOHINT)) {
             return 16;
         }
-        int base_advance = face->glyph->advance.x >> 6;
-        return base_advance + (base_advance >= 16 ? 2 : 1) + style.letter_spacing;
+        
+        int advance;
+        if (wch > 32 && wch < 128) {
+            int true_left = face->glyph->bitmap.width;
+            int true_right = 0;
+            for (unsigned int row = 0; row < face->glyph->bitmap.rows; ++row) {
+                for (unsigned int col = 0; col < face->glyph->bitmap.width; ++col) {
+                    int byte_idx = row * face->glyph->bitmap.pitch + (col >> 3);
+                    int bit_idx = 7 - (col & 7);
+                    if (face->glyph->bitmap.buffer[byte_idx] & (1 << bit_idx)) {
+                        if ((int)col < true_left) true_left = col;
+                        if ((int)col + 1 > true_right) true_right = col + 1;
+                    }
+                }
+            }
+            if (true_right > 0) {
+                advance = (true_right - true_left) + style.weight + 2; // 絕對 2px 間距
+            } else {
+                advance = (face->glyph->advance.x >> 6) + style.weight + 2;
+            }
+        } else {
+            int extra_spacing = (wch >= 0x80) ? 2 : 1;
+            advance = (face->glyph->advance.x >> 6) + extra_spacing + style.weight;
+        }
+        return advance + style.letter_spacing;
     }
 
     static unsigned char cached_fg = 254;
@@ -240,20 +263,44 @@ namespace TTF {
         }
         if (!face) return 16;
         
-        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO)) {
+        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO | FT_LOAD_FORCE_AUTOHINT)) {
             return 16;
         }
 
         update_colors(sample_shape, is_book);
 
         FT_Bitmap& bitmap = face->glyph->bitmap;
-        int base_advance = face->glyph->advance.x >> 6;
-        // +2 for full-width (Chinese) to prevent outline touching, +1 for half-width (English)
-        int advance = base_advance + (base_advance >= 16 ? 2 : 1); 
+        
+        int advance;
+        int true_left = bitmap.width;
+        int true_right = 0;
+        if (wch > 32 && wch < 128) {
+            for (unsigned int row = 0; row < bitmap.rows; ++row) {
+                for (unsigned int col = 0; col < bitmap.width; ++col) {
+                    int byte_idx = row * bitmap.pitch + (col >> 3);
+                    int bit_idx = 7 - (col & 7);
+                    if (bitmap.buffer[byte_idx] & (1 << bit_idx)) {
+                        if ((int)col < true_left) true_left = col;
+                        if ((int)col + 1 > true_right) true_right = col + 1;
+                    }
+                }
+            }
+            if (true_right > 0) {
+                advance = (true_right - true_left) + style.weight + 2; // 絕對 2px 間距
+            } else {
+                advance = (face->glyph->advance.x >> 6) + style.weight + 2;
+            }
+        } else {
+            int extra_spacing = (wch >= 0x80) ? 2 : 1;
+            advance = (face->glyph->advance.x >> 6) + extra_spacing + style.weight;
+        }
         
         int ascender = face->size->metrics.ascender >> 6;
         int top_y = yoff_original + ascender - face->glyph->bitmap_top;
         int left_x = x + face->glyph->bitmap_left;
+        if (wch > 32 && wch < 128 && true_right > 0) {
+            left_x = x - true_left;
+        }
 
         unsigned char fg_color = (style.fg_color >= 0 && style.fg_color <= 255) ? style.fg_color : cached_fg;
         unsigned char bg_color = cached_bg;
@@ -280,7 +327,7 @@ namespace TTF {
                             
                             if (style.shadow_type == -1) {
                                 // Default legacy behavior
-                                if (base_advance >= 16) {
+                                if (wch >= 0x80) {
                                     win->put_pixel8(bg_color, draw_x - 1, draw_y);
                                     win->put_pixel8(bg_color, draw_x, draw_y - 1);
                                 }

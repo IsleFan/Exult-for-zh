@@ -488,12 +488,12 @@ int Shape_manager::paint_text(std::shared_ptr<Font> font, const char* text, int 
 	return font->paint_text(gwin->get_win()->get_ib8(), text, textlen, xoff, yoff, nullptr, force_cjk);
 }
 
-int Shape_manager::get_text_width(int fontnum, const char* text) {
-	return fonts->get_text_width(fontnum, text);
+int Shape_manager::get_text_width(int fontnum, const char* text, bool force_cjk) {
+	return fonts->get_text_width(fontnum, text, force_cjk);
 }
 
-int Shape_manager::get_text_width(int fontnum, const char* text, int textlen) {
-	return fonts->get_text_width(fontnum, text, textlen);
+int Shape_manager::get_text_width(int fontnum, const char* text, int textlen, bool force_cjk) {
+	return fonts->get_text_width(fontnum, text, textlen, force_cjk);
 }
 
 int Shape_manager::get_text_height(int fontnum) {

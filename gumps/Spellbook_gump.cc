@@ -600,9 +600,14 @@ bool Spellbook_gump::handle_kbd_event(void* vev) {
 		return false;
 	}
 	switch (chr) {
-	case SDLK_RETURN: {
+	case SDLK_RETURN:
+	case SDLK_SPACE: {
 		if (book->bookmark >= 0) {
-			change_page(book->bookmark / 8 - page);
+			if (book->bookmark / 8 == page) {
+				do_spell(book->bookmark);
+			} else {
+				change_page(book->bookmark / 8 - page);
+			}
 		}
 		break;
 	}
@@ -619,10 +624,26 @@ bool Spellbook_gump::handle_kbd_event(void* vev) {
 		change_page(1);
 		break;
 	case SDLK_LEFT:
-		select_spell((page * 8) | (book->bookmark & 3));
+		if (book->bookmark >= 0 && (book->bookmark / 8) == page && (book->bookmark & 4) == 0) {
+			if (page > 0) {
+				int snum = book->bookmark & 3;
+				change_page(-1);
+				select_spell((page * 8) | snum | 4);
+			}
+		} else {
+			select_spell((page * 8) | (book->bookmark & 3));
+		}
 		break;
 	case SDLK_RIGHT:
-		select_spell((page * 8) | (book->bookmark & 3) | 4);
+		if (book->bookmark >= 0 && (book->bookmark / 8) == page && (book->bookmark & 4) == 4) {
+			if (page < 8) {
+				int snum = book->bookmark & 3;
+				change_page(1);
+				select_spell((page * 8) | snum);
+			}
+		} else {
+			select_spell((page * 8) | (book->bookmark & 3) | 4);
+		}
 		break;
 	case SDLK_UP: {
 		const int snum = book->bookmark & 3;
@@ -644,6 +665,26 @@ bool Spellbook_gump::handle_kbd_event(void* vev) {
 	}
 	default:
 		return false;
+	}
+	return true;
+}
+
+/*
+ *  Handle mouse wheel
+ */
+
+bool Spellbook_gump::mousewheel_up(int mx, int my) {
+	ignore_unused_variable_warning(mx, my);
+	if (page > 0) {
+		change_page(-1);
+	}
+	return true;
+}
+
+bool Spellbook_gump::mousewheel_down(int mx, int my) {
+	ignore_unused_variable_warning(mx, my);
+	if (page < 8) {
+		change_page(1);
 	}
 	return true;
 }

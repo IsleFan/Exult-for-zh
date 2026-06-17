@@ -852,7 +852,7 @@ int Font::get_chinese_font_size() {
 		if (user_size > 0) return user_size;
 	}
 
-	if (font_index == 0 || force_not_book) {
+	if (font_index == 0 || font_index == 7 || force_not_book) {
 		if (config) config->value("config/video/chinese/font_size_dialog", user_size, 0);
 		return user_size > 0 ? user_size : 15;    // Dialogues
 	}

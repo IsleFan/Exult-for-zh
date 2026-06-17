@@ -59,12 +59,12 @@ public:
 	}
 
 	// Get text width.
-	int get_text_width(int fontnum, const char* text) {
-		return fonts[fontnum]->get_text_width(text);
+	int get_text_width(int fontnum, const char* text, bool force_cjk = false) {
+		return fonts[fontnum]->get_text_width(text, force_cjk);
 	}
 
-	int get_text_width(int fontnum, const char* text, int textlen) {
-		return fonts[fontnum]->get_text_width(text, textlen);
+	int get_text_width(int fontnum, const char* text, int textlen, bool force_cjk = false) {
+		return fonts[fontnum]->get_text_width(text, textlen, force_cjk);
 	}
 
 	// Get text height, baseline.

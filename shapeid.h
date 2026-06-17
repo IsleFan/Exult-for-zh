@@ -193,8 +193,8 @@ public:
 	int paint_text(std::shared_ptr<Font> font, const char* text, int xoff, int yoff, bool force_cjk = false);
 	int paint_text(std::shared_ptr<Font> font, const char* text, int textlen, int xoff, int yoff, bool force_cjk = false);
 	// Get text width.
-	int get_text_width(int fontnum, const char* text);
-	int get_text_width(int fontnum, const char* text, int textlen);
+	int get_text_width(int fontnum, const char* text, bool force_cjk = false);
+	int get_text_width(int fontnum, const char* text, int textlen, bool force_cjk = false);
 	// Get text height, baseline.
 	int get_text_height(int fontnum);
 	// Get text height including vertical leading (for line spacing).
