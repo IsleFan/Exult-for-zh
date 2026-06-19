@@ -410,6 +410,7 @@ class Usecode_internal : public Usecode_machine {
 	USECODE_INTRINSIC_DECL(get_slider_value);
 	USECODE_INTRINSIC_DECL(set_gump_text_font);
 
+
 	/*
 	 *  Other private methods:
 	 */

@@ -69,6 +69,7 @@ private:
 
 public:
 	static bool is_painting_bark;
+	static bool is_painting_sign;
 	
 	int get_rendered_line_height_for(const char* text);
 	int get_rendered_line_height_for(const char* text, int len);

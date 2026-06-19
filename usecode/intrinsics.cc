@@ -1062,6 +1062,13 @@ USECODE_INTRINSIC(display_runes) {
 	ignore_unused_variable_warning(num_parms);
 	// Render text into runes for signs, tombstones, plaques and the like
 	// Display sign (gump #, array_of_text).
+	// Exult-zh: If the script buffered a Chinese translation via message() (without say()),
+	// show it in the conversation box now. It shares the single click with the rune display.
+	if (String && *String) {
+		conv->show_npc_message(String);
+		delete[] String;
+		String = nullptr;
+	}
 	int cnt = parms[1].get_array_size();
 	if (!cnt) {
 		cnt = 1;    // Try with 1 element.
@@ -1080,10 +1087,21 @@ USECODE_INTRINSIC(display_runes) {
 				sign.add_text(i, str);
 			}
 		}
+		class Sign_with_conv : public Paintable {
+			Sign_gump&    sign;
+			Conversation* conv;
+		public:
+			Sign_with_conv(Sign_gump& s, Conversation* c) : sign(s), conv(c) {}
+			void paint() override {
+				sign.paint();    // Exult-zh: draw sign first (background)
+				conv->paint();   // Exult-zh: draw conversation on top — Chinese translation never gets covered
+			}
+		} paintable(sign, conv);
 		int x;
 		int y;    // Paint it, and wait for click.
-		Get_click(x, y, Mouse::hand, nullptr, false, &sign);
+		Get_click(x, y, Mouse::hand, nullptr, false, &paintable);
 	}
+	conv->clear_text_pending();    // Exult-zh: clear conversation text after click
 	gwin->paint();
 	return no_ret;
 }
@@ -1382,6 +1400,7 @@ USECODE_INTRINSIC(clear_item_say) {
 	}
 	return no_ret;
 }
+
 
 USECODE_INTRINSIC(set_to_attack) {
 	ignore_unused_variable_warning(num_parms);

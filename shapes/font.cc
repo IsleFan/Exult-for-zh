@@ -45,6 +45,8 @@ namespace TTF {
 #include "utils.h"
 
 bool Font::is_painting_bark = false;
+bool Font::is_painting_sign = false;
+
 #include "Configuration.h"
 
 #include <fstream>
@@ -59,6 +61,17 @@ static std::string get_chinese_font_path(int font_size = -1) {
 				std::string sys_path = get_system_path(small_path);
 				if (U7exists(sys_path)) {
 					return sys_path;
+				}
+			}
+		}
+		// Exult-zh: sign-specific font path — fallback to font_path if not configured
+		if (Font::is_painting_sign) {
+			std::string sign_path;
+			config->value("config/video/chinese/sign_font_path", sign_path, "");
+			if (!sign_path.empty()) {
+				std::string sys_sign_path = get_system_path(sign_path);
+				if (U7exists(sys_sign_path)) {
+					return sys_sign_path;
 				}
 			}
 		}
@@ -77,7 +90,12 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 	int f_idx = font->get_font_index();
 	bool is_intro = font->get_force_not_book() && (f_idx == 11 || f_idx == 3);
 	bool is_ending = font->get_force_not_book() && (f_idx == 12 || f_idx == 13 || f_idx == 14 || f_idx == 4 || f_idx == 5 || f_idx == 0);
-	bool is_book = (f_idx != 0 && f_idx != 7 && !font->get_force_not_book());
+	bool is_woodsign = (f_idx == 1);
+	bool is_tombstone = (f_idx == 3);
+	bool is_goldsign = (f_idx == 6);
+	bool is_serpentine = (f_idx == 8 || f_idx == 10);
+	bool is_sign = (is_woodsign || is_tombstone || is_goldsign || is_serpentine);
+	bool is_book = (f_idx != 0 && f_idx != 7 && !is_sign && !font->get_force_not_book());
 
 	if (is_intro) {
 		config->value("config/video/chinese/letter_spacing", style.letter_spacing, 0);
@@ -95,6 +113,38 @@ static TTF::Render_Style get_chinese_ttf_style(Font* font) {
 		config->value("config/video/chinese/shadow_offset_y_ending", style.shadow_offset_y, 1);
 		config->value("config/video/chinese/shadow_color_ending", style.shadow_color, -1);
 		config->value("config/video/chinese/font_color_ending", style.fg_color, -1);
+	} else if (is_woodsign) {
+		config->value("config/video/chinese/letter_spacing_woodsign", style.letter_spacing, 0);
+		config->value("config/video/chinese/font_weight_woodsign", style.weight, 0);
+		config->value("config/video/chinese/shadow_type_woodsign", style.shadow_type, -1);
+		config->value("config/video/chinese/shadow_offset_x_woodsign", style.shadow_offset_x, 1);
+		config->value("config/video/chinese/shadow_offset_y_woodsign", style.shadow_offset_y, 1);
+		config->value("config/video/chinese/shadow_color_woodsign", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_woodsign", style.fg_color, -1);
+	} else if (is_tombstone) {
+		config->value("config/video/chinese/letter_spacing_tombstone", style.letter_spacing, 0);
+		config->value("config/video/chinese/font_weight_tombstone", style.weight, 0);
+		config->value("config/video/chinese/shadow_type_tombstone", style.shadow_type, -1);
+		config->value("config/video/chinese/shadow_offset_x_tombstone", style.shadow_offset_x, 1);
+		config->value("config/video/chinese/shadow_offset_y_tombstone", style.shadow_offset_y, 1);
+		config->value("config/video/chinese/shadow_color_tombstone", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_tombstone", style.fg_color, -1);
+	} else if (is_goldsign) {
+		config->value("config/video/chinese/letter_spacing_goldsign", style.letter_spacing, 0);
+		config->value("config/video/chinese/font_weight_goldsign", style.weight, 0);
+		config->value("config/video/chinese/shadow_type_goldsign", style.shadow_type, -1);
+		config->value("config/video/chinese/shadow_offset_x_goldsign", style.shadow_offset_x, 1);
+		config->value("config/video/chinese/shadow_offset_y_goldsign", style.shadow_offset_y, 1);
+		config->value("config/video/chinese/shadow_color_goldsign", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_goldsign", style.fg_color, -1);
+	} else if (is_sign) {
+		config->value("config/video/chinese/letter_spacing_sign", style.letter_spacing, 0);
+		config->value("config/video/chinese/font_weight_sign", style.weight, 0);
+		config->value("config/video/chinese/shadow_type_sign", style.shadow_type, -1);
+		config->value("config/video/chinese/shadow_offset_x_sign", style.shadow_offset_x, 1);
+		config->value("config/video/chinese/shadow_offset_y_sign", style.shadow_offset_y, 1);
+		config->value("config/video/chinese/shadow_color_sign", style.shadow_color, -1);
+		config->value("config/video/chinese/font_color_sign", style.fg_color, -1);
 	} else if (is_book && !is_bark) {
 		config->value("config/video/chinese/letter_spacing_book", style.letter_spacing, 0);
 		config->value("config/video/chinese/font_weight_book", style.weight, 0);
@@ -819,6 +869,14 @@ void Font::get_text_box_dims(const char* text, int& width, int& height, int vert
  */
 
 int Font::get_text_height() {
+	// For sign/tombstone/goldsign fonts, return the TTF size so that
+	// Sign_gump's vertical spacing math uses the correct CJK character height.
+	if (font_index == 1 || font_index == 3 || font_index == 6 || font_index == 8 || font_index == 10) {
+		int ttf_size = get_chinese_font_size();
+		if (ttf_size > 0) {
+			return ttf_size + 4;  // +4 for descenders/padding
+		}
+	}
 	return get_original_height();
 }
 
@@ -856,6 +914,25 @@ int Font::get_chinese_font_size() {
 		if (config) config->value("config/video/chinese/font_size_dialog", user_size, 0);
 		return user_size > 0 ? user_size : 15;    // Dialogues
 	}
+	
+	// Add specific font size for Signs, Tombstones, and Plaques (Runic fonts)
+	if (font_index == 1) { // woodsign
+		if (config) config->value("config/video/chinese/font_size_woodsign", user_size, 0);
+		return user_size > 0 ? user_size : 14;
+	}
+	if (font_index == 3) { // tombstone
+		if (config) config->value("config/video/chinese/font_size_tombstone", user_size, 0);
+		return user_size > 0 ? user_size : 14;
+	}
+	if (font_index == 6) { // goldsign
+		if (config) config->value("config/video/chinese/font_size_goldsign", user_size, 0);
+		return user_size > 0 ? user_size : 14;
+	}
+	//if (font_index == 8 || font_index == 10) { // serpentine
+	//	if (config) config->value("config/video/chinese/font_size_sign", user_size, 0);
+	//	return user_size > 0 ? user_size : 14;
+	//}
+	
 	if (font_index != 0 && font_index != 7 && !force_not_book) {
 		if (config) config->value("config/video/chinese/font_size_book", user_size, 0);
 		return user_size > 0 ? user_size : 11;    // Books and UI (per user request)

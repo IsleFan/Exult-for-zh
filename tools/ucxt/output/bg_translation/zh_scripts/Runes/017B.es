@@ -29,8 +29,7 @@ labelFunc017B_005D:
 	if (!(var0001 == 0x0001)) goto labelFunc017B_0080;
 	var000A = ["skara", "brae~", "~population", "47"];
 
-	var_chinese = "史卡拉布萊
-人口 47";
+	var_chinese = "史卡拉布萊人口 47";
 	goto labelFunc017B_105D;
 labelFunc017B_0080:
 	if (!(var0001 == 0x0002)) goto labelFunc017B_009A;
@@ -861,7 +860,7 @@ labelFunc017B_105D:
 	
 	if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		say(var_chinese);
+		message("腦海響起遠古的低喃：「" + var_chinese + "」");  // 緩衝中文翻譯，由 display_runes 共用同一次點擊顯示
 	}
 	
 	UI_display_runes(0x0031, var000A);

@@ -315,8 +315,17 @@ namespace TTF {
             bg_color = trans[bg_color];
         }
 
+            bool should_draw_shadow = false;
+            if (style.shadow_type != 0) {
+                if (style.shadow_color >= 0 && style.shadow_color <= 255) {
+                    should_draw_shadow = true; // Always draw if user explicitly requested a shadow color (even 0)
+                } else if (cached_bg != 0 && bg_color != 0) {
+                    should_draw_shadow = true; // Legacy behavior
+                }
+            }
+
             // Draw outline/shadow first
-            if (cached_bg != 0 && bg_color != 0 && style.shadow_type != 0) {
+            if (should_draw_shadow) {
                 for (unsigned int row = 0; row < bitmap.rows; ++row) {
                     for (unsigned int col = 0; col < bitmap.width; ++col) {
                         int byte_idx = row * bitmap.pitch + (col >> 3);

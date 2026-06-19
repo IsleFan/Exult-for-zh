@@ -97,8 +97,7 @@ labelFunc0334_01AD:
 	if (!(var0001 == 0x0001)) goto labelFunc0334_01CF;
 	var000A = ["tomb|of", "kronos", "forgotten", "but|not", "forgiven"];
 
-	var_chinese = "克羅諾斯之墓
-被遺忘但不可原諒";
+	var_chinese = "克羅諾斯之墓被遺忘但不可原諒";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_01CF:
@@ -140,33 +139,34 @@ labelFunc0334_024F:
 	if (!(var0001 == 0x0007)) goto labelFunc0334_026E;
 	var000A = ["hammer", "here", "to", "enter"];
 
-	var_chinese = "敲擊此處進入";
+	var_chinese = "鍛打錘鍊，必備之物";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_026E:
 	if (!(var0001 == 0x0008)) goto labelFunc0334_029C;
 	var000A = ["pick|item", "carefully", "to|k)p", "goi*"];
-	Func08FF(["By Jove, I think thou art on the right track!", "The sign appears to have changed!", "Look at it now!"]);
+	var_chinese = "無匙之鎖，一挑即破";
+	Func08FF(["「天啊，我覺得你找到方法了！」", "「銘板似乎變了！」", "快看看吧！"]);
 	goto labelFunc0334_09FA;
 labelFunc0334_029C:
 	if (!(var0001 == 0x0009)) goto labelFunc0334_02BB;
 	var000A = ["a|golden", "ring|of", "tru(", "faces|()"];
 
-	var_chinese = "真相的金戒指朝向你";
+	var_chinese = "金身圓環，指尖套牢";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_02BB:
 	if (!(var0001 == 0x000A)) goto labelFunc0334_02DA;
 	var000A = ["grasp", "not", "at", "(r+ds"];
 
-	var_chinese = "不要抓住線程";
+	var_chinese = "千絲萬縷，繞於木心";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_02DA:
 	if (!(var0001 == 0x000B)) goto labelFunc0334_02FC;
 	var000A = ["(e", "royal|mint", "shall|not", "hold|()", "back"];
 
-	var_chinese = "皇家鑄幣廠不會阻擋你";
+	var_chinese = "定價萬物，買賣之本";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_02FC:
@@ -278,15 +278,14 @@ labelFunc0334_04BE:
 	if (!(var0001 == 0x001B)) goto labelFunc0334_04DD;
 	var000A = ["|marney|", "skara|braes", "fine,", "flower"];
 
-	var_chinese = "瑪妮
-史卡拉布萊最美的花朵";
+	var_chinese = "瑪妮史卡拉布萊最美的花朵";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_04DD:
 	if (!(var0001 == 0x001C)) goto labelFunc0334_04F9;
 	var000A = ["(e", "wayfarers", "inn"];
 
-	var_chinese = "旅人客棧";
+	var_chinese = "風塵旅人客棧";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_04F9:
@@ -429,21 +428,21 @@ labelFunc0334_0728:
 	if (!((Func0932((var0008[0x0001] - var000B[0x0001])) <= 0x0002) && (Func0932((var0008[0x0002] - var000B[0x0002])) <= 0x0002))) goto labelFunc0334_07DC;
 	var0007 = UI_execute_usecode_array(item, [(byte)0x55, 0x0609, (byte)0x55, 0x0609, (byte)0x55, 0x0609, (byte)0x2D]);
 	var0007 = UI_execute_usecode_array(0xFFE9, [(byte)0x27, 0x0003, (byte)0x58, 0x0013, (byte)0x61, (byte)0x6D, (byte)0x58, 0x0056, (byte)0x01, (byte)0x6E, (byte)0x55, 0x0334]);
-	Func08FE(["", "@He's dead, Avatar!@", "@Yancey-Hausman will pay!@"]);
+	Func08FE(["", "他死了，聖者！", "@Yancey-Hausman 必將付出代價@"]);
 	var0007 = UI_execute_usecode_array(0xFE9C, [(byte)0x23, (byte)0x56, 0x001A]);
 	return;
 	goto labelFunc0334_07F7;
 labelFunc0334_07DC:
 	var000A = ["THE", "THRONE", "ROOM", "OF", "LORD", "BRITISH"];
 
-	var_chinese = "不列顛王的王座室";
+	var_chinese = "不列顛王的王座廳";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_07F7:
 	if (!(var0001 == 0x0031)) goto labelFunc0334_0819;
 	var000A = ["SEE IF", "THOU ART", "THE NEXT", "LORD OF", "BRITANNIA"];
 
-	var_chinese = "看看你是否是下一任不列顛尼亞之王";
+	var_chinese = "你是下一任不列顛尼亞之王嗎？";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0819:
@@ -471,8 +470,7 @@ labelFunc0334_0879:
 	if (!(var0001 == 0x0035)) goto labelFunc0334_089B;
 	var000A = ["|j|r|r|t|", "a|gr+t", "man", "a|gr+t", "writer"];
 
-	var_chinese = "J.R.R.T.
-偉大的人，偉大的作家";
+	var_chinese = "J.R.R.T. 偉大的人，偉大的作家";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_089B:
@@ -570,7 +568,7 @@ labelFunc0334_09FA:
 	
 	if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		say(var_chinese);
+		message("腦海響起遠古的低喃：「" + var_chinese + "」");
 	}
 	
 	UI_display_runes(0x0033, var000A);

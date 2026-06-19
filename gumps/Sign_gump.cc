@@ -23,8 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Sign_gump.h"
 
 #include "actors.h"
+#include "font.h"
 #include "game.h"
 #include "gamewin.h"
+
 
 /*
  *  Create a sign gump.
@@ -124,12 +126,24 @@ void Sign_gump::paint() {
 	} else if (get_shapenum() == game->get_shape("gumps/tombstone")) {
 		font = 3;
 	}
+	// Exult-zh: Determine if any sign line contains Chinese (non-ASCII) characters.
+	// If so, use the TTF-aware height (which our modified get_text_height() returns).
+	// If not (i.e. original runic glyphs), fall back to the actual shape height to
+	// avoid the text floating upward due to oversized TTF-based spacing.
+	bool has_chinese = false;
+	for (int i = 0; i < num_lines; i++) {
+		for (unsigned char c : lines[i]) {
+			if (c >= 0x80) { has_chinese = true; break; }
+		}
+		if (has_chinese) break;
+	}
 	// Get height of 1 line.
-	const int lheight = sman->get_text_height(font);
+	const int lheight = has_chinese ? sman->get_text_height(font) : sman->get_font(font)->get_rendered_line_height();
 	// Get space between lines.
 	const int lspace = (object_area.h - num_lines * lheight) / (num_lines + 1);
 	// Paint the gump itself.
 	paint_shape(x, y);
+	Font::is_painting_sign = true;    // Exult-zh: signal font system to use sign-specific font
 	int ypos = y + object_area.y;    // Where to paint next line.
 	for (int i = 0; i < num_lines; i++) {
 		ypos += lspace;
@@ -141,5 +155,6 @@ void Sign_gump::paint() {
 				ypos);
 		ypos += lheight;
 	}
+	Font::is_painting_sign = false;    // Exult-zh: restore
 	gwin->set_painted();
 }
