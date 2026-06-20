@@ -130,7 +130,7 @@ namespace TTF {
     int get_char_width(uint32_t wch, const Render_Style& style) {
         if (wch == 127) return 8 + style.letter_spacing; // Custom bullet width
         if (!face) return 16;
-        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO | FT_LOAD_FORCE_AUTOHINT)) {
+        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO)) {
             return 16;
         }
         
@@ -263,7 +263,7 @@ namespace TTF {
         }
         if (!face) return 16;
         
-        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO | FT_LOAD_FORCE_AUTOHINT)) {
+        if (FT_Load_Char(face, wch, FT_LOAD_RENDER | FT_LOAD_TARGET_MONO)) {
             return 16;
         }
 
