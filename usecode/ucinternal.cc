@@ -1719,7 +1719,14 @@ int Usecode_internal::get_user_choice_num() {
 		const bool result = Get_click(x, y, Mouse::hand, &chr, false, conv, true, &keycode);
 		if (!result) {    // ESC pressed, select 'bye' if poss.
 			choice_num = conv->locate_answer("bye");
-		} else if (keycode == SDLK_RETURN || keycode == SDLK_KP_ENTER || keycode == SDLK_SPACE) {
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE5\x91\x8A\xE8\xBE\xAD"); // 告辭
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE5\x91\x8A\xE5\x88\xA5"); // 告別 (繁)
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE5\x91\x8A\xE5\x88\xAB"); // 告别 (簡)
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE5\x86\x8D\xE8\xA6\x8B"); // 再見 (繁)
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE5\x86\x8D\xE8\xA7\x81"); // 再见 (簡)
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE9\x9B\xA2\xE9\x96\x8B"); // 離開 (繁)
+			if (choice_num == -1) choice_num = conv->locate_answer("\xE7\xA6\xBB\xE5\xBC\x80"); // 离开 (簡)
+		} else if (keycode == SDLK_SPACE) {
 			choice_num = conv->conversation_choice(Mouse::mouse()->get_mousex(), Mouse::mouse()->get_mousey());
 			if (choice_num == -1 && conv->get_num_answers() > 0) {
 				choice_num = hover_index;
@@ -1728,19 +1735,105 @@ int Usecode_internal::get_user_choice_num() {
 			choice_num = -1;
 			int num_ans = conv->get_num_answers();
 			if (num_ans > 0) {
-				if (keycode == SDLK_UP || keycode == SDLK_LEFT) {
-					hover_index--;
-					if (hover_index < 0) hover_index = num_ans - 1;
-				} else {
-					hover_index++;
-					if (hover_index >= num_ans) hover_index = 0;
+				std::vector<int> y_levels;
+				for (int i = 0; i < num_ans; ++i) {
+					TileRect rect = conv->get_choice_rect(i);
+					if (rect.w <= 0) continue;
+					bool found = false;
+					for (int y : y_levels) {
+						if (std::abs(rect.y - y) < 10) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						y_levels.push_back(rect.y);
+					}
 				}
+				std::sort(y_levels.begin(), y_levels.end());
+
+				TileRect current_rect = conv->get_choice_rect(hover_index);
+				int current_y_level_idx = -1;
+				for (size_t idx = 0; idx < y_levels.size(); ++idx) {
+					if (std::abs(current_rect.y - y_levels[idx]) < 10) {
+						current_y_level_idx = idx;
+						break;
+					}
+				}
+
+				int best_next_index = -1;
+				if (keycode == SDLK_DOWN && current_y_level_idx != -1 && current_y_level_idx + 1 < (int)y_levels.size()) {
+					int target_y = y_levels[current_y_level_idx + 1];
+					int cx = current_rect.x + current_rect.w / 2;
+					long min_dist = -1;
+					for (int i = 0; i < num_ans; ++i) {
+						TileRect rect = conv->get_choice_rect(i);
+						if (rect.w <= 0 || std::abs(rect.y - target_y) >= 10) continue;
+						int cx_i = rect.x + rect.w / 2;
+						long dist = std::abs(cx_i - cx);
+						if (min_dist == -1 || dist < min_dist) {
+							min_dist = dist;
+							best_next_index = i;
+						}
+					}
+				} else if (keycode == SDLK_UP && current_y_level_idx > 0) {
+					int target_y = y_levels[current_y_level_idx - 1];
+					int cx = current_rect.x + current_rect.w / 2;
+					long min_dist = -1;
+					for (int i = 0; i < num_ans; ++i) {
+						TileRect rect = conv->get_choice_rect(i);
+						if (rect.w <= 0 || std::abs(rect.y - target_y) >= 10) continue;
+						int cx_i = rect.x + rect.w / 2;
+						long dist = std::abs(cx_i - cx);
+						if (min_dist == -1 || dist < min_dist) {
+							min_dist = dist;
+							best_next_index = i;
+						}
+					}
+				} else if (keycode == SDLK_LEFT) {
+					int target_y = y_levels[current_y_level_idx];
+					int best_x = -1;
+					for (int i = 0; i < num_ans; ++i) {
+						TileRect rect = conv->get_choice_rect(i);
+						if (rect.w <= 0 || std::abs(rect.y - target_y) >= 10) continue;
+						if (rect.x < current_rect.x) {
+							if (best_x == -1 || rect.x > best_x) {
+								best_x = rect.x;
+								best_next_index = i;
+							}
+						}
+					}
+				} else if (keycode == SDLK_RIGHT) {
+					int target_y = y_levels[current_y_level_idx];
+					int best_x = -1;
+					for (int i = 0; i < num_ans; ++i) {
+						TileRect rect = conv->get_choice_rect(i);
+						if (rect.w <= 0 || std::abs(rect.y - target_y) >= 10) continue;
+						if (rect.x > current_rect.x) {
+							if (best_x == -1 || rect.x < best_x) {
+								best_x = rect.x;
+								best_next_index = i;
+							}
+						}
+					}
+				}
+
+				if (best_next_index != -1) {
+					hover_index = best_next_index;
+				} else {
+					if (keycode == SDLK_LEFT) {
+						hover_index = (hover_index - 1 + num_ans) % num_ans;
+					} else if (keycode == SDLK_RIGHT) {
+						hover_index = (hover_index + 1) % num_ans;
+					}
+				}
+
 				TileRect rect = conv->get_choice_rect(hover_index);
 				if (rect.w > 0) {
-					int cx = rect.x + rect.w / 2;
-					int cy = rect.y + rect.h / 2;
+					int cx_new = rect.x + rect.w / 2;
+					int cy_new = rect.y + rect.h / 2;
 					int sx, sy;
-					gwin->get_win()->game_to_screen(cx, cy, gwin->get_fastmouse(), sx, sy);
+					gwin->get_win()->game_to_screen(cx_new, cy_new, gwin->get_fastmouse(), sx, sy);
 					SDL_WarpMouseInWindow(gwin->get_win()->get_screen_window(), (float)sx, (float)sy);
 				}
 			}

@@ -2278,6 +2278,10 @@ static bool Get_click(
 		bool  rotate_colors,   // If the palette colors should rotate.
 		int*  keycode          // SDL keycode returned if not null.
 ) {
+	static uint32 last_click_ticks = 0;
+	if (SDL_GetTicks() - last_click_ticks > 150) {
+		last_click_ticks = SDL_GetTicks();
+	}
 	dragging               = false;    // Init.
 	uint32 last_rotate     = 0;
 	g_waiting_for_click    = true;
@@ -2343,6 +2347,10 @@ static bool Get_click(
 						if (chr) {
 							*chr = 0;
 						}
+						if (ticks - last_click_ticks < 150) {
+							break;
+						}
+						last_click_ticks = ticks;
 						g_waiting_for_click = false;
 						return true;
 					}
@@ -2375,6 +2383,9 @@ static bool Get_click(
 				case SDLK_ESCAPE:
 					g_waiting_for_click = false;
 					return false;
+				case SDLK_RETURN:
+				case SDLK_KP_ENTER:
+					break;
 				case SDLK_RSHIFT:
 				case SDLK_LSHIFT:
 				case SDLK_RCTRL:
@@ -2400,10 +2411,18 @@ static bool Get_click(
 					}
 					if (chr) {    // Looking for a character?
 						*chr                = (event.key.mod & SDL_KMOD_SHIFT) ? toupper(c) : c;
+						if (ticks - last_click_ticks < 150) {
+							break;
+						}
+						last_click_ticks = ticks;
 						g_waiting_for_click = false;
 						return true;
 					}
 					if (keycode) {
+						if (ticks - last_click_ticks < 150) {
+							break;
+						}
+						last_click_ticks = ticks;
 						g_waiting_for_click = false;
 						return true;
 					}

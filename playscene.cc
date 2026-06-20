@@ -379,7 +379,6 @@ ScenePlayer::SkipAction ScenePlayer::check_break() {
 			case SDLK_ESCAPE:
 				return SkipAction::EXIT_SCENE;
 			case SDLK_SPACE:
-			case SDLK_RETURN:
 				return SkipAction::NEXT_SECTION;
 			default:
 				break;
