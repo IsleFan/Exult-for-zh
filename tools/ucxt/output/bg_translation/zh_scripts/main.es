@@ -35,3 +35,4 @@
 #include "Runes/017B.es"
 #include "Runes/02CB.es"
 #include "Runes/0334.es"
+#include "Runes/runic_first_click.es"

@@ -1017,10 +1017,10 @@ USECODE_INTRINSIC(npc_nearby) {
 	const Tile_coord pos = obj->get_tile();
 	Actor*           npc;
 	const bool       is_near = gwin->get_win_tile_rect().has_world_point(pos.tx, pos.ty) &&
-						 // Guessing: true if non-NPC, false if NPC is dead, asleep or
-						 // paralyzed.
-						 ((npc = as_actor(obj)) == nullptr || npc->can_act());
-	Usecode_value u(is_near);
+							   // Guessing: true if non-NPC, false if NPC is dead, asleep or
+							   // paralyzed.
+							   ((npc = as_actor(obj)) == nullptr || npc->can_act());
+	Usecode_value    u(is_near);
 	return u;
 }
 
@@ -1064,10 +1064,12 @@ USECODE_INTRINSIC(display_runes) {
 	// Display sign (gump #, array_of_text).
 	// Exult-zh: If the script buffered a Chinese translation via message() (without say()),
 	// show it in the conversation box now. It shares the single click with the rune display.
+	bool has_message = false;
 	if (String && *String) {
 		conv->show_npc_message(String);
 		delete[] String;
-		String = nullptr;
+		String      = nullptr;
+		has_message = true;
 	}
 	int cnt = parms[1].get_array_size();
 	if (!cnt) {
@@ -1075,6 +1077,9 @@ USECODE_INTRINSIC(display_runes) {
 	}
 	{
 		Sign_gump sign(parms[0].get_int_value(), cnt);
+		if (has_message || conv->is_npc_text_pending()) {
+			sign.set_pos(sign.get_x(), sign.get_y() + 30);
+		}
 		for (int i = 0; i < cnt; i++) {
 			// Paint each line.
 			const Usecode_value& lval = !i ? parms[1].get_elem0() : parms[1].get_elem(i);
@@ -1087,16 +1092,20 @@ USECODE_INTRINSIC(display_runes) {
 				sign.add_text(i, str);
 			}
 		}
+
 		class Sign_with_conv : public Paintable {
 			Sign_gump&    sign;
 			Conversation* conv;
+
 		public:
 			Sign_with_conv(Sign_gump& s, Conversation* c) : sign(s), conv(c) {}
+
 			void paint() override {
-				sign.paint();    // Exult-zh: draw sign first (background)
-				conv->paint();   // Exult-zh: draw conversation on top — Chinese translation never gets covered
+				sign.paint();     // Exult-zh: draw sign first (background)
+				conv->paint();    // Exult-zh: draw conversation on top — Chinese translation never gets covered
 			}
 		} paintable(sign, conv);
+
 		int x;
 		int y;    // Paint it, and wait for click.
 		Get_click(x, y, Mouse::hand, nullptr, false, &paintable);
@@ -1401,7 +1410,6 @@ USECODE_INTRINSIC(clear_item_say) {
 	return no_ret;
 }
 
-
 USECODE_INTRINSIC(set_to_attack) {
 	ignore_unused_variable_warning(num_parms);
 	// set_to_attack(fromnpc, to, weaponshape).
@@ -1505,7 +1513,7 @@ USECODE_INTRINSIC(summon) {
 	}
 	const Tile_coord start = gwin->get_main_actor()->get_tile();
 	const Tile_coord dest  = Map_chunk::find_spot(
-            start, 5, shapenum, 0, 1, -1, gwin->is_main_actor_inside() ? Map_chunk::inside : Map_chunk::outside);
+			start, 5, shapenum, 0, 1, -1, gwin->is_main_actor_inside() ? Map_chunk::inside : Map_chunk::outside);
 	if (dest.tx == -1) {
 		return Usecode_value(0);
 	}
@@ -2003,9 +2011,10 @@ USECODE_INTRINSIC(sprite_effect) {
 	// Validate sprite number is in valid range before creating effect
 	Shape_manager* sman = Shape_manager::get_instance();
 	if (sprite_num >= 0 && sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
-		gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
-				sprite_num, Tile_coord(parms[1].get_int_value(), parms[2].get_int_value(), 0), parms[3].get_int_value(),
-				parms[4].get_int_value(), 0, parms[5].get_int_value(), parms[6].get_int_value()));
+		gwin->get_effects()->add_effect(
+				std::make_unique<Sprites_effect>(
+						sprite_num, Tile_coord(parms[1].get_int_value(), parms[2].get_int_value(), 0), parms[3].get_int_value(),
+						parms[4].get_int_value(), 0, parms[5].get_int_value(), parms[6].get_int_value()));
 	}
 	return no_ret;
 }
@@ -2020,9 +2029,10 @@ USECODE_INTRINSIC(obj_sprite_effect) {
 		// Validate sprite number is in valid range before creating effect
 		Shape_manager* sman = Shape_manager::get_instance();
 		if (sprite_num >= 0 && sprite_num < sman->get_file(SF_SPRITES_VGA).get_num_shapes()) {
-			gwin->get_effects()->add_effect(std::make_unique<Sprites_effect>(
-					sprite_num, obj, -parms[2].get_int_value(), -parms[3].get_int_value(), parms[4].get_int_value(),
-					parms[5].get_int_value(), parms[6].get_int_value(), parms[7].get_int_value()));
+			gwin->get_effects()->add_effect(
+					std::make_unique<Sprites_effect>(
+							sprite_num, obj, -parms[2].get_int_value(), -parms[3].get_int_value(), parms[4].get_int_value(),
+							parms[5].get_int_value(), parms[6].get_int_value(), parms[7].get_int_value()));
 		}
 	}
 	return no_ret;
@@ -2893,8 +2903,8 @@ USECODE_INTRINSIC(is_not_blocked) {
 	// Find out about given shape.
 	const Shape_info& info = ShapeID::get_info(shapenum);
 	const TileRect    footprint(
-            tile.tx - info.get_3d_xtiles(framenum) + 1, tile.ty - info.get_3d_ytiles(framenum) + 1, info.get_3d_xtiles(framenum),
-            info.get_3d_ytiles(framenum));
+			tile.tx - info.get_3d_xtiles(framenum) + 1, tile.ty - info.get_3d_ytiles(framenum) + 1, info.get_3d_xtiles(framenum),
+			info.get_3d_ytiles(framenum));
 	int        new_lift;
 	const bool blocked = Map_chunk::is_blocked(
 			info.get_3d_height(), tile.tz, footprint.x, footprint.y, footprint.w, footprint.h, new_lift, MOVE_ALL_TERRAIN, 1);

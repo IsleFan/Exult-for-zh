@@ -521,8 +521,8 @@ labelFunc040A_0856:
 	message("「你是想讓我在這裡等，還是想讓我回家？」");
 	say();
 	UI_clear_answers();
-	var0028 = Func090B(["wait here", "go home"]);
-	if (!(var0028 == "wait here")) goto labelFunc040A_08A0;
+	var0028 = Func090B(["在這裡等", "回家"]);
+	if (!(var0028 == "在這裡等")) goto labelFunc040A_08A0;
 	message("「很好！我會等你的！」*");
 	say();
 	UI_remove_from_party(0xFFF6);

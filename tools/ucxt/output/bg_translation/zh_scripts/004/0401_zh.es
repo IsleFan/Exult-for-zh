@@ -337,8 +337,8 @@ labelFunc0401_061F:
 	message("「你是要我留在這裡等你，還是要我回 Yew 的家？」");
 	say();
 	UI_clear_answers();
-	var000E = Func090B(["wait here", "go home"]);
-	if (!(var000E == "wait here")) goto labelFunc0401_0675;
+	var000E = Func090B(["在這裡等", "回家"]);
+	if (!(var000E == "在這裡等")) goto labelFunc0401_0675;
 	message("「很好。我會在這裡等你回來，並邀請我重新加入。」");
 	say();
 	UI_remove_from_party(0xFFFF);

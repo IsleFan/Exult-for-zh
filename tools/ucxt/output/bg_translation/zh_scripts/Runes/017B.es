@@ -1,6 +1,9 @@
 #game "blackgate"
 // externs
+extern void Func08FF 0x8FF (var var0000);
 extern var Func0908 0x908 ();
+extern var Func090A 0x90A ();
+extern void runic_first_click 0x95F ();
 
 void Func017B shape#(0x17B) ()
 {
@@ -197,7 +200,7 @@ labelFunc017B_039E:
 	if (!(var0001 == 0x001E)) goto labelFunc017B_03B8;
 	var000A = ["out|n|inn"];
 
-	var_chinese = "進出客棧";
+	var_chinese = "出入平安客棧";
 	goto labelFunc017B_105D;
 labelFunc017B_03B8:
 	if (!(var0001 == 0x001F)) goto labelFunc017B_03D5;
@@ -221,7 +224,7 @@ labelFunc017B_0409:
 	if (!(var0001 == 0x0022)) goto labelFunc017B_0429;
 	var000A = ["house", "of", "games"];
 
-	var_chinese = "遊戲之屋";
+	var_chinese = "賭　坊";
 	goto labelFunc017B_105D;
 labelFunc017B_0429:
 	if (!(var0001 == 0x0023)) goto labelFunc017B_0449;
@@ -858,14 +861,13 @@ labelFunc017B_103D:
 labelFunc017B_105D:
 	var has_magic_book = UI_count_objects(0xFE9B, 0x0282, 149, 0);
 	
-	if (has_magic_book > 0 && var_chinese != "") {
+	if (has_magic_book == 0 && var_chinese != "") {
+		UI_display_runes(0x0031, var000A);
+		runic_first_click();
+	} else if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		message("腦海響起遠古的低喃：「" + var_chinese + "」");  // 緩衝中文翻譯，由 display_runes 共用同一次點擊顯示
-	}
-	
-	UI_display_runes(0x0031, var000A);
-	
-	if (has_magic_book > 0 && var_chinese != "") {
+		message("古老符文碎裂重組，古語呢喃指引方向：「" + var_chinese + "」");
+		UI_display_runes(0x0031, var000A);
 		UI_remove_npc_face(UI_get_avatar_ref());
 	}
 	return;

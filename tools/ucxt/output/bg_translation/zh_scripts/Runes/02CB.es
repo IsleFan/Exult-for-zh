@@ -1,6 +1,9 @@
 #game "blackgate"
 // externs
+extern void Func08FF 0x8FF (var var0000);
 extern var Func0908 0x908 ();
+extern var Func090A 0x90A ();
+extern void runic_first_click 0x95F ();
 
 void Func02CB shape#(0x2CB) ()
 {
@@ -745,14 +748,13 @@ labelFunc02CB_0D4E:
 labelFunc02CB_0D71:
 	var has_magic_book = UI_count_objects(0xFE9B, 0x0282, 149, 0);
 	
-	if (has_magic_book > 0 && var_chinese != "") {
+	if (has_magic_book == 0 && var_chinese != "") {
+		UI_display_runes(0x0032, var000A);
+		runic_first_click();
+	} else if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		message("腦海響起遠古的低喃：「" + var_chinese + "」");  // 緩衝中文翻譯，由 display_runes 共用同一次點擊顯示
-	}
-	
-	UI_display_runes(0x0032, var000A);
-	
-	if (has_magic_book > 0 && var_chinese != "") {
+		message("墓碑載負逝者之嘆，化為新文躍然腦海：「" + var_chinese + "」");
+		UI_display_runes(0x0032, var000A);
 		UI_remove_npc_face(UI_get_avatar_ref());
 	}
 	return;

@@ -5,6 +5,9 @@ extern var Func0908 0x908 ();
 extern void Func08FF 0x8FF (var var0000);
 extern var Func0932 0x932 (var var0000);
 extern void Func08FE 0x8FE (var var0000);
+extern void Func08FE 0x8FE (var var0000);
+extern var Func090A 0x90A ();
+extern void runic_first_click 0x95F ();
 
 void Func0334 shape#(0x334) ()
 {
@@ -229,7 +232,7 @@ labelFunc0334_03EE:
 	if (!(var0001 == 0x0014)) goto labelFunc0334_0407;
 	var000A = ["NATIONAL", "BRANCH"];
 
-	var_chinese = "國家分部";
+	var_chinese = "總　會";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0407:
@@ -560,20 +563,13 @@ labelFunc0334_09DB:
 labelFunc0334_09FA:
 	var has_magic_book = UI_count_objects(0xFE9B, 0x0282, 149, 0);
 	
-	// 為了方便測試：如果聖者身上沒有，就直接發一本給他！
-	if (has_magic_book == 0) {
-		UI_add_party_items(1, 0x0282, 149, 0, false);
-		has_magic_book = 1;
-	}
-	
-	if (has_magic_book > 0 && var_chinese != "") {
+	if (has_magic_book == 0 && var_chinese != "") {
+		UI_display_runes(0x0033, var000A);
+		runic_first_click();
+	} else if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		message("腦海響起遠古的低喃：「" + var_chinese + "」");
-	}
-	
-	UI_display_runes(0x0033, var000A);
-	
-	if (has_magic_book > 0 && var_chinese != "") {
+		message("古文悄然消散，新文躍然腦海：「" + var_chinese + "」");
+		UI_display_runes(0x0033, var000A);
 		UI_remove_npc_face(UI_get_avatar_ref());
 	}
 	return;
