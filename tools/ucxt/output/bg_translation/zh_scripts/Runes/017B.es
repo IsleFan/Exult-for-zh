@@ -11,6 +11,7 @@ void Func017B shape#(0x17B) ()
 	var var0001;
 	var var000A;
 	var var_chinese = "";
+	var is_runic = true;
 
 	if (!(event != 0x0001)) goto labelFunc017B_0009;
 	return;
@@ -21,6 +22,8 @@ labelFunc017B_0009:
 	var000A = ["THIS IS", "NOT A", "VALID", "SIGN"];
 
 	var_chinese = "這不是一個有效的招牌";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_003A:
 	if (!(var0001 == 0x0000)) goto labelFunc017B_005D;
@@ -51,6 +54,8 @@ labelFunc017B_00BA:
 	var000A = ["FELLOWSHIP", "HALL"];
 
 	var_chinese = "友誼會大廳";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_00D7:
 	if (!(var0001 == 0x0005)) goto labelFunc017B_00F1;
@@ -63,12 +68,16 @@ labelFunc017B_00F1:
 	var000A = ["COMING:", "RAYMUNDO'S", "@TRIALS OF", "THE AVATAR@"];
 
 	var_chinese = "即將上演：雷蒙多《聖者的試煉》";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0114:
 	if (!(var0001 == 0x0007)) goto labelFunc017B_0137;
 	var000A = ["RESERVE", "THY", "SEATS", "NOW"];
 
 	var_chinese = "現在就預訂你的座位";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0137:
 	if (!(var0001 == 0x0008)) goto labelFunc017B_0154;
@@ -171,6 +180,8 @@ labelFunc017B_030D:
 	var000A = ["TEST OF STRENGTH", " -- ", "ART THOU AN AVATAR?"];
 
 	var_chinese = "力量測試 —— 你是聖者嗎？";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_032D:
 	if (!(var0001 == 0x001A)) goto labelFunc017B_034D;
@@ -200,7 +211,7 @@ labelFunc017B_039E:
 	if (!(var0001 == 0x001E)) goto labelFunc017B_03B8;
 	var000A = ["out|n|inn"];
 
-	var_chinese = "出入平安客棧";
+	var_chinese = "進進出出客棧";
 	goto labelFunc017B_105D;
 labelFunc017B_03B8:
 	if (!(var0001 == 0x001F)) goto labelFunc017B_03D5;
@@ -243,12 +254,16 @@ labelFunc017B_0460:
 	var000A = ["MEDITATION", "RETREAT"];
 
 	var_chinese = "冥想靜修所";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_047D:
 	if (!(var0001 == 0x002C)) goto labelFunc017B_0497;
 	var000A = ["GO THIS WAY"];
 
 	var_chinese = "走這邊";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0497:
 	if (!(var0001 == 0x0034)) goto labelFunc017B_04B1;
@@ -362,7 +377,7 @@ labelFunc017B_0695:
 	if (!(var0001 == 0x0046)) goto labelFunc017B_06B2;
 	var000A = ["empa(", "abbey"];
 
-	var_chinese = "共情修道院";
+	var_chinese = "人神修道院";
 	goto labelFunc017B_105D;
 labelFunc017B_06B2:
 	if (!(var0001 == 0x0047)) goto labelFunc017B_06CC;
@@ -460,6 +475,8 @@ labelFunc017B_086B:
 	var000A = ["AVENUE", "OF", "THE", "FELLOWSHIP"];
 
 	var_chinese = "友誼會大道";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_088E:
 	if (!(var0001 == 0x0057)) goto labelFunc017B_08AB;
@@ -556,6 +573,8 @@ labelFunc017B_0A44:
 	var000A = ["FELLOWSHIP", "SHELTER"];
 
 	var_chinese = "友誼會庇護所";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0A61:
 	if (!(var0001 == 0x0067)) goto labelFunc017B_0A7E;
@@ -725,12 +744,16 @@ labelFunc017B_0D91:
 	var000A = ["BEWARE", "OF", "LANDSLIDES"];
 
 	var_chinese = "小心落石";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0DB1:
 	if (!(var0001 == 0x0083)) goto labelFunc017B_0DD4;
 	var000A = ["DANGER:", "DO", "NOT", "ENTER"];
 
 	var_chinese = "危險：禁止進入";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0DD4:
 	if (!(var0001 == 0x0084)) goto labelFunc017B_0DF4;
@@ -815,6 +838,8 @@ labelFunc017B_0F63:
 	var000A = ["THE", "THRONE", "OF|THE", "GUARDIAN"];
 
 	var_chinese = "守護者王座";
+
+	is_runic = false;
 	goto labelFunc017B_105D;
 labelFunc017B_0F86:
 	if (!(var0001 == 0x0091)) goto labelFunc017B_0FA6;
@@ -863,12 +888,16 @@ labelFunc017B_105D:
 	
 	if (has_magic_book == 0 && var_chinese != "") {
 		UI_display_runes(0x0031, var000A);
-		runic_first_click();
+		if (is_runic) {
+			runic_first_click();
+		}
 	} else if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		message("古老符文碎裂重組，古語呢喃指引方向：「" + var_chinese + "」");
+		message("文字碎裂重組，呢喃指引方向：「" + var_chinese + "」");
 		UI_display_runes(0x0031, var000A);
 		UI_remove_npc_face(UI_get_avatar_ref());
+	} else {
+		UI_display_runes(0x0031, var000A);
 	}
 	return;
 }

@@ -23,6 +23,7 @@ void Func0334 shape#(0x334) ()
 	var var0009;
 	var var000A;
 	var var_chinese = "";
+	var is_runic = true;
 	var var000B;
 
 	var0000 = item;
@@ -116,12 +117,16 @@ labelFunc0334_01E8:
 
 	var_chinese = "友誼會大廳";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0201:
 	if (!(var0001 == 0x0004)) goto labelFunc0334_021D;
 	var000A = ["TEST", "OF", "STRENGTH"];
 
 	var_chinese = "力量測試";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_021D:
@@ -130,12 +135,16 @@ labelFunc0334_021D:
 
 	var_chinese = "冥想靜修所";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0236:
 	if (!(var0001 == 0x0006)) goto labelFunc0334_024F;
 	var000A = ["SHRINE OF", "THE CODEX"];
 
 	var_chinese = "法典神殿";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_024F:
@@ -185,12 +194,16 @@ labelFunc0334_030F:
 
 	var_chinese = "不要走這邊";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_032B:
 	if (!(var0001 == 0x000E)) goto labelFunc0334_034A;
 	var000A = ["DO NOT GO", "IN", "THE", "WOODEN DOOR"];
 
 	var_chinese = "不要進入木門";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_034A:
@@ -199,12 +212,16 @@ labelFunc0334_034A:
 
 	var_chinese = "不要進入有窗戶的門";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_036C:
 	if (!(var0001 == 0x0010)) goto labelFunc0334_038E;
 	var000A = ["GO", "IN", "THE", "STEEL", "DOOR"];
 
 	var_chinese = "進入鋼鐵門";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_038E:
@@ -213,12 +230,16 @@ labelFunc0334_038E:
 
 	var_chinese = "不要進入綠色門";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_03AD:
 	if (!(var0001 == 0x0012)) goto labelFunc0334_03CF;
 	var000A = ["ONLY", "ONE", "OF THESE", "SIGNS", "IS TRUE"];
 
 	var_chinese = "這些招牌中只有一個是真的";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_03CF:
@@ -227,12 +248,16 @@ labelFunc0334_03CF:
 
 	var_chinese = "至少有兩個招牌是假的";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_03EE:
 	if (!(var0001 == 0x0014)) goto labelFunc0334_0407;
 	var000A = ["NATIONAL", "BRANCH"];
 
 	var_chinese = "總　會";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0407:
@@ -241,12 +266,16 @@ labelFunc0334_0407:
 
 	var_chinese = "你是聖者嗎？";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0423:
 	if (!(var0001 == 0x0016)) goto labelFunc0334_0442;
 	var000A = ["RESERVE", "THY", "SEATS", "NOW!"];
 
 	var_chinese = "現在就預訂你的座位！";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0442:
@@ -255,12 +284,16 @@ labelFunc0334_0442:
 
 	var_chinese = "佐格之骨：最早的不列顛尼亞化石";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_0464:
 	if (!(var0001 == 0x0018)) goto labelFunc0334_0483;
 	var000A = ["SWAMP BOOTS", "ONCE WORN", "BY THE", "AVATAR"];
 
 	var_chinese = "聖者曾經穿過的沼澤靴";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0483:
@@ -269,12 +302,16 @@ labelFunc0334_0483:
 
 	var_chinese = "曼尼茲作曲時使用的羽管鍵琴";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_04A2:
 	if (!(var0001 == 0x001A)) goto labelFunc0334_04BE;
 	var000A = ["|ANIA", "OF", "SPRING|"];
 
 	var_chinese = "春天的阿尼亞";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_04BE:
@@ -288,7 +325,7 @@ labelFunc0334_04DD:
 	if (!(var0001 == 0x001C)) goto labelFunc0334_04F9;
 	var000A = ["(e", "wayfarers", "inn"];
 
-	var_chinese = "風塵旅人客棧";
+	var_chinese = "旅人旅館";
 
 	goto labelFunc0334_09FA;
 labelFunc0334_04F9:
@@ -332,12 +369,16 @@ labelFunc0334_057C:
 
 	var_chinese = "萬變王座";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_059E:
 	if (!(var0001 == 0x0023)) goto labelFunc0334_05BD;
 	var000A = ["THE", "THRONE", "OF", "VIRTUE"];
 
 	var_chinese = "美德王座";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_05BD:
@@ -346,12 +387,16 @@ labelFunc0334_05BD:
 
 	var_chinese = "不列顛王的火槍";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_05D9:
 	if (!(var0001 == 0x0025)) goto labelFunc0334_05F8;
 	var000A = ["THE", "STONES", "OF", "VIRTUE"];
 
 	var_chinese = "美德之石";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_05F8:
@@ -360,12 +405,16 @@ labelFunc0334_05F8:
 
 	var_chinese = "石像鬼曾經使用過的銀號角";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_061A:
 	if (!(var0001 == 0x0027)) goto labelFunc0334_0639;
 	var000A = ["TO SUMMON", "THE", "SILVER", "SNAKES"];
 
 	var_chinese = "召喚銀蛇";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0639:
@@ -374,12 +423,16 @@ labelFunc0334_0639:
 
 	var_chinese = "十字聖架 —— 美德的象徵";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_065B:
 	if (!(var0001 == 0x0029)) goto labelFunc0334_0674;
 	var000A = ["LORD", "BRITISH"];
 
 	var_chinese = "不列顛王";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0674:
@@ -388,6 +441,8 @@ labelFunc0334_0674:
 
 	var_chinese = "聖者";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_068D:
 	if (!(var0001 == 0x002B)) goto labelFunc0334_06A9;
@@ -395,12 +450,16 @@ labelFunc0334_068D:
 
 	var_chinese = "漩渦方塊";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_06A9:
 	if (!(var0001 == 0x002C)) goto labelFunc0334_06CB;
 	var000A = ["THE", "RUNES", "OF", "THE", "VIRTUES"];
 
 	var_chinese = "美德盧恩石";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_06CB:
@@ -415,6 +474,8 @@ labelFunc0334_06ED:
 	var000A = ["DO NOT", "ENTER"];
 
 	var_chinese = "禁止進入";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0706:
@@ -440,12 +501,16 @@ labelFunc0334_07DC:
 
 	var_chinese = "不列顛王的王座廳";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_07F7:
 	if (!(var0001 == 0x0031)) goto labelFunc0334_0819;
 	var000A = ["SEE IF", "THOU ART", "THE NEXT", "LORD OF", "BRITANNIA"];
 
 	var_chinese = "你是下一任不列顛尼亞之王嗎？";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0819:
@@ -460,6 +525,8 @@ labelFunc0334_083B:
 	var000A = ["BEWARE", "THE", "DRAGON"];
 
 	var_chinese = "小心惡龍";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_0857:
@@ -482,6 +549,8 @@ labelFunc0334_089B:
 
 	var_chinese = "不列顛尼亞透鏡";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_08B7:
 	if (!(var0001 == 0x0037)) goto labelFunc0334_08D3;
@@ -489,12 +558,16 @@ labelFunc0334_08B7:
 
 	var_chinese = "石像鬼透鏡";
 
+	is_runic = false;
+
 	goto labelFunc0334_09FA;
 labelFunc0334_08D3:
 	if (!(var0001 == 0x0038)) goto labelFunc0334_08EC;
 	var000A = ["EX", "POR"];
 
-	var_chinese = "開鎖 (Ex Por)";
+	var_chinese = "開鎖";
+
+	is_runic = false;
 
 	goto labelFunc0334_09FA;
 labelFunc0334_08EC:
@@ -565,12 +638,16 @@ labelFunc0334_09FA:
 	
 	if (has_magic_book == 0 && var_chinese != "") {
 		UI_display_runes(0x0033, var000A);
-		runic_first_click();
+		if (is_runic) {
+			runic_first_click();
+		}
 	} else if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
-		message("古文悄然消散，新文躍然腦海：「" + var_chinese + "」");
+		message("銘文悄然消散，化為熟悉文字：「" + var_chinese + "」");
 		UI_display_runes(0x0033, var000A);
 		UI_remove_npc_face(UI_get_avatar_ref());
+	} else {
+		UI_display_runes(0x0033, var000A);
 	}
 	return;
 }

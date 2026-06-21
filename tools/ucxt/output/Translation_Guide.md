@@ -21,12 +21,13 @@
 - **Emps** ➔ **森靈族**
 - **Field** ➔ **力場** (用於法術、陷阱、魔法陣等)
 - **locket** ➔ **吊飾盒** (新馬金西亞任務中 Henry/Robin 的金色吊飾盒)
-- **Empath Abbey** ➔ **共情修道院**
+- **Empath Abbey** ➔ **人神修道院**
 - **Meditation Retreat** ➔ **冥想靜修院**
 - **Shrine of Principle** ➔ **原則神殿**
 - **Shrine of Courage** ➔ **勇氣神殿**
 - **Shrine of Love** ➔ **愛之神殿**
 - **Shrine of Truth** ➔ **真理神殿**
+- **Shrine of Compassion** ➔ **慈悲神殿**
 - **New Magincia** ➔ **New Magincia**
 - **Buccaneer's Den** ➔ **Buccaneer's Den**
 - **The Nymphet** ➔ **小仙女號 (The Nymphet)**
@@ -42,8 +43,8 @@
 - **THE MODEST DAMSEL** ➔ **羞怯少女旅店**
 - **THE CHECQUERED CORK** ➔ **方格軟木塞客棧**
 - **THE HONORABLE HOUND** ➔ **謙遜獵犬客棧**
-- **THE OUT'N'INN** ➔ **出入平安客棧**
-- **THE WAYFARERER'S INN** ➔ **風塵旅人客棧**
+- **THE OUT'N'INN** ➔ **進進出出客棧**
+- **THE WAYFARERER'S INN** ➔ **旅人旅館**
 - **THE FALLEN VIRGIN** ➔ **落難少女旅店**
 - **Salty Dog** ➔ **老海狗酒館**
 - **Ferryman** ➔ **擺渡人**
@@ -222,3 +223,22 @@
 - **Summon** ➔ **招喚術**
 - **Swordstrike** ➔ **劍擊術**
 - **Time Stop** ➔ **時間暫停**
+
+##地名對照：先僅供參考，文本先不要翻譯##
+- **Buccaneer's Den** ➔ **海盜巢穴**
+- **Britain** ➔ **不列顛城**
+- **Cove** ➔ **柯伏城**
+- **Isle of the Aratar** ➔ **聖者之島**
+- **Jhelom** ➔ **捷南城**
+- **Minoc** ➔ **米諾克城**
+- **Moonglow** ➔ **月光城**
+- **New Magnincia** ➔ **新美琴西尼亞城**
+- **Paws** ➔ **小掌村**
+- **Serpent's Hold** ➔ **海蛇堡**
+- **Skara Brae** ➔ **史卡拉布雷城**
+- **Spektran** ➔ **史巴克傳列島**
+- **Trinsic** ➔ **特林西克城**
+- **Yew** ➔ **紫杉城**
+- **Terfin** ➔ **特爾芬城**
+- **Vesper** ➔ **維士皮爾城**
+- **Lock Lake** ➔ **鎖湖**

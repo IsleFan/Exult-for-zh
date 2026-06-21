@@ -11,6 +11,7 @@ void Func02CB shape#(0x2CB) ()
 	var var0001;
 	var var000A;
 	var var_chinese = "";
+	var is_runic = true;
 
 	if (!(event != 0x0001)) goto labelFunc02CB_0009;
 	return;
@@ -21,6 +22,8 @@ labelFunc02CB_0009:
 	var000A = ["IS", "SIGN ZERO"];
 
 	var_chinese = "零號招牌";
+
+	is_runic = false;
 
 	goto labelFunc02CB_0D71;
 	goto labelFunc02CB_0D71;
@@ -43,6 +46,8 @@ labelFunc02CB_0077:
 	var000A = ["LADY M:", "YOUTH IS", "HERS", "FOREVER"];
 
 	var_chinese = "M女士：青春永駐";
+
+	is_runic = false;
 
 	goto labelFunc02CB_0D71;
 labelFunc02CB_0097:
@@ -750,12 +755,16 @@ labelFunc02CB_0D71:
 	
 	if (has_magic_book == 0 && var_chinese != "") {
 		UI_display_runes(0x0032, var000A);
-		runic_first_click();
+		if (is_runic) {
+			runic_first_click();
+		}
 	} else if (has_magic_book > 0 && var_chinese != "") {
 		UI_show_npc_face(UI_get_avatar_ref(), 0);
 		message("墓碑載負逝者之嘆，化為新文躍然腦海：「" + var_chinese + "」");
 		UI_display_runes(0x0032, var000A);
 		UI_remove_npc_face(UI_get_avatar_ref());
+	} else {
+		UI_display_runes(0x0032, var000A);
 	}
 	return;
 }
