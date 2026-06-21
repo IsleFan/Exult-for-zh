@@ -181,25 +181,26 @@ void Conversation::set_face_rect(Npc_face_info* info, Npc_face_info* prev, int s
 		if (starty < prev->face_rect.y + prev->face_rect.h) {
 			starty = prev->face_rect.y + prev->face_rect.h;
 		}
-		starty += (base_text_height > 15) ? 8 : 2 * base_text_height;
+		starty += 10;
 		if (starty + face_h > screenh - 1) {
 			starty = screenh - face_h - 1;
 		}
 		extrah = 4;
 	} else {
-		starty = 1;
+		starty = 5;
 		extrah = 4;
 	}
 	info->face_rect      = gwin->clip_to_win(TileRect(startx, starty, face_w + extraw, face_h + extrah));
 	const TileRect& fbox = info->face_rect;
-	int lines_allowed = (max_text_height > 15) ? 3 : 4;
+	int lines_allowed = 5; // Allow up to 5 lines to prevent text overflowing bounding box and overlapping the next portrait
 	if (info->large_face) {
 		info->text_rect = gwin->clip_to_win(TileRect(fbox.x + 8, fbox.y + fbox.h + 8, fbox.w - 16, lines_allowed * max_text_height));
+		info->last_text_height = info->text_rect.h;
 	} else {
 		info->text_rect = gwin->clip_to_win(
-				TileRect(fbox.x + fbox.w + 8, fbox.y + 4, screenw - fbox.x - fbox.w - 16, lines_allowed * max_text_height));
+				TileRect(fbox.x + fbox.w + 8, fbox.y - 1, screenw - fbox.x - fbox.w - 16, lines_allowed * max_text_height));
+		info->last_text_height = info->text_rect.h + 5; // Compensate for the -5 shift so layout doesn't move faces up
 	}
-	info->last_text_height = info->text_rect.h;
 }
 
 /*
@@ -573,43 +574,62 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 		if (fy < prev->face_rect.y + prev->face_rect.h) {
 			fy = prev->face_rect.y + prev->face_rect.h;
 		}
-		fy += (line_height > 15) ? 8 : line_height;
+		fy += 10;
 	}
 
-	// Pre-calculate the total height of the choices to prevent them from going off-screen
-	int test_tbox_w = sbox.w - fx - face->get_width() - 16;
-	int temp_x = 0;
-	int temp_y = 0;
-	int temp_line_step = has_chinese ? line_height : line_height - 1;
-	for (int i = 0; i < num_choices; i++) {
-		char text[256];
-		text[0] = 127;    // A circle.
-		strcpy(&text[1], choices[i]);
-		const int width = sman->get_text_width(0, text, has_chinese);
-		if (temp_x > 0 && temp_x + width >= test_tbox_w) {
-			temp_x = 0;
-			temp_y += temp_line_step;
+	int tbox_x_offset = 8;
+	int tbox_w_offset = 16;
+
+	auto calc_height = [&]() {
+		int test_tbox_w = sbox.w - fx - face->get_width() - tbox_w_offset;
+		int temp_x = 0;
+		int temp_y = 0;
+		int temp_line_step = has_chinese ? line_height : line_height - 1;
+		for (int i = 0; i < num_choices; i++) {
+			char text[256];
+			text[0] = 127;    // A circle.
+			strcpy(&text[1], choices[i]);
+			const int width = sman->get_text_width(0, text, has_chinese);
+			if (temp_x > 0 && temp_x + width >= test_tbox_w) {
+				temp_x = 0;
+				temp_y += temp_line_step;
+			}
+			temp_x += width + space_width;
 		}
-		temp_x += width + space_width;
-	}
-	int total_choices_height = temp_y + line_height;
-	
-	// If the choices or the avatar face exceed the bottom of the screen, push them up
+		return temp_y + line_height;
+	};
+
+	int total_choices_height = calc_height();
 	int needed_h = std::max(face->get_height(), 4 + total_choices_height);
+
+	// If choices exceed screen height and we have horizontal room to spare, widen the layout
+	if (fy + needed_h > sbox.h && fx > 8) {
+		fx = 8;
+		tbox_x_offset = 4;
+		tbox_w_offset = 8;
+		// Recalculate with the wider layout
+		total_choices_height = calc_height();
+		needed_h = std::max(face->get_height(), 4 + total_choices_height);
+	}
+
+	// If it still exceeds the bottom of the screen, push them up
 	if (fy + needed_h > sbox.h) {
 		fy = sbox.h - needed_h;
 		if (fy < 0) fy = 0;
 	}
 
+
+
 	TileRect mbox(fx, fy, face->get_width(), face->get_height());
 	mbox        = mbox.intersect(sbox);
 	avatar_face = mbox;    // Repaint entire width.
 	// Set to where to draw sentences.
-	TileRect tbox(mbox.x + mbox.w + 8, mbox.y + 4, sbox.w - mbox.x - mbox.w - 16,
+	TileRect tbox(mbox.x + mbox.w + tbox_x_offset, mbox.y - 1, sbox.w - mbox.x - mbox.w - tbox_w_offset,
 				  5 * line_height);    // Try 5 lines.
 	tbox = tbox.intersect(sbox);
 	// Draw portrait.
 	sman->paint_shape(mbox.x + face->get_xleft(), mbox.y + face->get_yabove(), face);
+	
 	delete[] conv_choices;    // Set up new list of choices.
 	conv_choices      = new TileRect[num_choices + 1];
 	const int text_bg = gwin->get_text_bg();
