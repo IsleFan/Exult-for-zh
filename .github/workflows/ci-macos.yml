@@ -73,6 +73,7 @@ jobs:
           export CPPFLAGS="-I$(brew --prefix flex)/include -I$(brew --prefix zlib)/include -I$(brew --prefix freetype)/include/freetype2"
           export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$(brew --prefix libxml2)/bin:$PATH"
           export PKG_CONFIG_PATH="$(brew --prefix zlib)/lib/pkgconfig:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix freetype)/lib/pkgconfig"
+          export LIBS="-lfreetype"
           ./configure --with-debug=extreme --enable-exult-studio --enable-exult-studio-support --enable-compiler \
             --enable-zip-support --enable-shared --enable-shp-thumbnailer --enable-data --enable-mods --enable-aseprite-plugin \
             --disable-alsa --disable-timidity-midi
@@ -82,6 +83,7 @@ jobs:
           export CPPFLAGS="-I$(brew --prefix flex)/include -I$(brew --prefix zlib)/include -I$(brew --prefix freetype)/include/freetype2"
           export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$(brew --prefix libxml2)/bin:$PATH"
           export PKG_CONFIG_PATH="$(brew --prefix zlib)/lib/pkgconfig:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix freetype)/lib/pkgconfig"
+          export LIBS="-lfreetype"
           make -j3
           make bundle_shared
           make osxdmg
