@@ -148,17 +148,38 @@ make osxdmg          # 連同拖曳安裝介面打包成 .dmg
 
 ## 🗂️ 遊戲資料放哪 / `exult.cfg`
 
-遊戲**不一定**要放 `/Library/Application Support/Exult`。路徑解析(macOS):
+> **本 fork 的 macOS 預設已改**:引擎資料與遊戲全部集中在**家目錄**
+> `~/Library/Application Support/Exult/`,**不需 sudo、不碰系統層 `/Library`**。
+> (改動於 `files/utils.cc` 的 `Get_gamehome_dir()` 與 `setup_data_dir()`;原版預設是系統層
+> `/Library/Application Support/Exult`,需 sudo。)
 
-- **遊戲 STATIC 預設搜尋位置**:`/Library/Application Support/Exult/<遊戲>`(系統,需 sudo)
-- **設定檔與存檔**:`~/Library/Application Support/Exult/`(你的家目錄)
+預設目錄結構(全部在你的家目錄下,可寫):
 
-要放別處(免 sudo),在 `~/Library/Application Support/Exult/exult.cfg` 指定 `path`:
+```
+~/Library/Application Support/Exult/
+├── data/                       ← 引擎資料:exult.flx / exult_bg.flx / exult_si.flx
+│                                  + 音效包 sqsfxbg.flx / sqsfxsi.flx / jmsfx.flx …
+├── blackgate/
+│   ├── static/ (或 STATIC)     ← Black Gate 遊戲檔(自備正版)
+│   ├── patch/                  ← chinese.ttf / usecode / mainshp.flx / ENDSHAPE.FLX …
+│   └── gamedat/                ← 引擎產生(進度/存檔)
+└── serpentisle/{static,patch,gamedat}/
+```
+
+| 內容 | 系統路徑變數 | 預設位置 | sudo |
+|---|---|---|---|
+| 引擎資料 | `<DATA>` | `~/Library/Application Support/Exult/data` | 不用 |
+| 遊戲 static / patch | `<GAMEHOME>` | `~/Library/Application Support/Exult/<遊戲>` | 不用 |
+| 存檔 / gamedat | `<SAVEHOME>` | `~/Library/Application Support/Exult/<遊戲>` | 不用 |
+| 設定檔 `exult.cfg` | — | `~/Library/Preferences/exult.cfg` | 不用 |
+
+想放別處?在 `~/Library/Preferences/exult.cfg` 用 `<path>` / `<data_path>` 覆蓋預設:
 
 ```xml
 <?xml version="1.0"?>
 <config>
   <disk>
+    <data_path>/your/engine/data</data_path>
     <game>
       <blackgate><path>/Users/you/Games/U7/blackgate</path></blackgate>
       <serpentisle><path>/Users/you/Games/U7/serpentisle</path></serpentisle>
@@ -169,14 +190,9 @@ make osxdmg          # 連同拖曳安裝介面打包成 .dmg
 
 對應放成 `<path>/static`(遊戲檔)與 `<path>/patch`(中文 patch)。
 
-> **`exult.cfg` 不見?** Exult **不會一啟動就建立它**——只在乾淨結束或於選單改設定時才寫出。
-> 且 `~/Library` 在 Finder 預設隱藏。最可靠是自己用終端機建立此檔。
-
-| 放哪 | sudo | 怎麼讓 .app 找到 |
-|---|---|---|
-| `/Library/Application Support/Exult`(預設) | 要 | 不用設定 |
-| 任意資料夾 | 不用 | `~/Library/.../exult.cfg` 設 `path` |
-| 完全自包在 .app 內 | 不用 | 執行檔換成 wrapper,用 `-c` 指 app 內設定 |
+> **找不到 `exult.cfg`?** 它在 **`~/Library/Preferences/exult.cfg`**(不是 Application Support)。
+> `~/Library` 在 Finder 預設隱藏 —— 用 `open ~/Library/Preferences/exult.cfg`,或在 Finder 按
+> `⌘⇧G` 貼上路徑。且 Exult **不會一啟動就建立它**,只在乾淨結束或於選單改設定時才寫出。
 
 ---
 
@@ -191,13 +207,16 @@ make osxdmg          # 連同拖曳安裝介面打包成 .dmg
 | 中文變**亂碼** | 用到 **Big5** 版 usecode。本引擎吃 **UTF-8**,只能用 `usecode_builds/usecode.2026*` |
 | 物品名仍英文 | 物品名在 `STATIC/TEXT.FLX`,需以 `textpack` 重打包翻譯版覆蓋 |
 | `npc.dat … errno 2`(建 gamedat 失敗) | 可寫目錄鏈不存在 / `$HOME` 被污染。可攜啟動器已 `mkdir -p` 預建 |
-| `exult.cfg` 不存在 | 見上節:啟動不會建立、`~/Library` 隱藏;自行建立即可 |
+| `exult.cfg` 找不到 | 在 **`~/Library/Preferences/exult.cfg`**(隱藏);啟動不會自動建立,乾淨結束後才寫出 |
+| 遊戲讀不到 / 要 sudo | 確認資料在**家目錄** `~/Library/Application Support/Exult/`(本 fork 新預設),不是系統層 `/Library` |
 
 ### 技術備註
 
 - 引擎以 **UTF-8** 解碼(`shapes/ttf_font.cc`),codepage 預設 `UTF8`。
 - 中文字型固定讀 `<PATCH>/chinese.ttf`;對話讀 `<PATCH>/usecode`(無副檔名)。
 - macOS **沒有** `-p` portable 旗標(僅 Windows 編譯),改用 `-c <設定檔>`。
+- **本 fork 已把 macOS 預設資料路徑(`<DATA>` 與 `<GAMEHOME>`)改到家目錄**
+  `~/Library/Application Support/Exult/`,使其與 `<SAVEHOME>` 一致、免 sudo(見「遊戲資料放哪」)。
 
 ---
 
