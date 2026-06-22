@@ -1,70 +1,209 @@
-# Badges
+# Exult-for-zh · macOS 安裝與打包工具
 
+在 **macOS (Apple Silicon)** 上編譯、組裝、打包 *Ultima VII* 繁體中文版的完整流程與一鍵工具。
 
-[![Chat on IRC][irc-badge]][irc-url]
+本倉庫在 [pmanyeh/Exult-for-zh](https://github.com/pmanyeh/Exult-for-zh) 的繁中化成果之上,
+補上 macOS 端的**自動組裝腳本** (`setup-exult-zh.sh`) 與**完整建置/疑難排解文件**。
 
-[![License: GPL v2][gpl-badge]][gpl-url]
+---
 
-[![CodeFactor Grade][codefactor-badge]][codefactor-url]
-[![CodeQL][codeql-badge]][codeql-url]
+## 📌 來源與致謝 (Attribution)
 
-[![CI Android][android-badge]][android-url]
-[![CI FreeBSD][freebsd-badge]][freebsd-url]
-[![CI iOS][ios-badge]][ios-url]
-[![CI Mac OS X][macosx-badge]][macosx-url]
-[![CI OmniOS][omnios-badge]][omnios-url]
-[![CI Ubuntu][ubuntu-badge]][ubuntu-url]
-[![CI Windows MinGW][win-mingw-badge]][win-mingw-url]
-[![CI Windows MSVC][win-msvc-badge]][win-msvc-url]
+| 層級 | 專案 | 內容 |
+|---|---|---|
+| 本倉庫 | (你的 fork) | macOS 安裝/可攜/打包工具與文件 |
+| 上游 fork | **[pmanyeh/Exult-for-zh](https://github.com/pmanyeh/Exult-for-zh)** | *Ultima VII* 繁體中文化:CJK 渲染引擎修改 + 對話/物品翻譯 |
+| 原始引擎 | **[exult/exult](https://github.com/exult/exult)** | Exult — 開源的 *Ultima VII* 遊戲引擎 (GPL-2.0) |
 
-[![Coverity Scan Analysis][cov-analysis-badge]][cov-analysis-url]
-[![Coverity Scan Results][cov-results-badge]][cov-results-url]
+> 繁體中文化的引擎修改與全部翻譯成果,皆為 **pmanyeh/Exult-for-zh** 專案作者所完成,
+> 在此致謝。本倉庫僅將其在 macOS 上的安裝與打包流程自動化,**不含任何遊戲版權檔**。
+>
+> 遊戲資料 (`STATIC`) 需自備**正版**(例如於 GOG 購買的 *Ultima VII: The Black Gate /
+> Serpent Isle*),本工具不散布遊戲內容。
 
-[![snapshots][snapshots-badge]][snapshots-url]
-[![Latest snapshot][snapshot-release-badge]][snapshots-release-url]
+---
 
-## What is Exult?
+## 🧩 本倉庫提供什麼
 
-----
+- **`setup-exult-zh.sh`** — 一鍵把「已編譯的引擎 + 繁中字型/對話/圖檔 + 你的正版遊戲檔」
+  組裝成可執行環境,支援兩種模式:
+  - `--portable` 組成自帶引擎與遊戲、整包可搬移的資料夾(預設)
+  - `--system` 安裝到 macOS 標準路徑
+- 完整的**建置流程**與**疑難排解**文件(見下)。
 
-Ultima VII an RPG from the early 1990's, still has a huge following. But, being a DOS game with a very nonstandard memory manager, it is difficult to run it on the latest computers. Exult is a project to create an Ultima VII game engine that runs on modern operating systems, capable of using the data and graphics files that come with the game.
+---
 
-Exult is written in C++ and runs on, at least, Linux, macOS and Windows using the SDL library to make porting to other platforms relatively easy. The current version supports all of "Ultima VII: The Black Gate" and "Ultima VII Part 2: Serpent Isle", allowing you to finish both games. This is only possible due to the work done by other fans who have decoded the various Ultima VII data files, especially Gary Thompson, Maxim Shatskih, Jakob Schonberg, and Wouter Dijkslag.
+## ✅ 前置需求
 
-Exult aims to let those people who own Ultima VII (copyright 1993) play the game on modern hardware, in as close to (or perhaps even surpassing) its original splendor as is possible. You need to own "Ultima VII: The Black Gate" and/or "Ultima VII Part 2: Serpent Isle" and optionally the add-ons (not required to run) in order to use Exult, and we encourage you to buy a legal copy.
+1. **Xcode**(完整版,bundle 階段會用到)。
+2. **Homebrew 套件**:
+   ```bash
+   brew install autoconf automake libtool pkg-config autoconf-archive \
+     sdl2 libvorbis libpng fluid-synth freetype dylibbundler create-dmg
+   ```
+3. **正版遊戲**:GOG 版 *Ultima VII* 的兩個 `.app`(Black Gate / Serpent Isle)。
 
-For more information, either consult the README file on the repository, or view its HTML version [here](https://exult.info/docs.html).
+---
 
-[irc-badge]:            https://img.shields.io/badge/web.libera.chat-%23exult-blue?logo=LiveChat&logoColor=white
-[gpl-badge]:            https://img.shields.io/github/license/exult/exult?label=License&logo=GNU&logoColor=white
-[codefactor-badge]:     https://img.shields.io/codefactor/grade/github/exult/exult?label=codefactor&logo=codefactor&logoColor=white
-[codeql-badge]:         https://img.shields.io/github/actions/workflow/status/exult/exult/codeql.yml?label=CodeQL&logo=github&logoColor=white
-[android-badge]:        https://img.shields.io/github/actions/workflow/status/exult/exult/ci-android.yml?label=CI%20Android&logo=Android&logoColor=white
-[freebsd-badge]:        https://img.shields.io/github/actions/workflow/status/exult/exult/ci-freebsd.yml?label=CI%20FreeBSD&logo=freebsd&logoColor=white
-[ios-badge]:            https://img.shields.io/github/actions/workflow/status/exult/exult/ci-ios.yml?label=CI%20iOS&logo=iOS&logoColor=white
-[macosx-badge]:         https://img.shields.io/github/actions/workflow/status/exult/exult/ci-macos.yml?label=CI%20Mac%20OS%20X&logo=Apple&logoColor=white
-[ubuntu-badge]:         https://img.shields.io/github/actions/workflow/status/exult/exult/ci-linux.yml?label=CI%20Ubuntu&logo=Ubuntu&logoColor=white
-[win-mingw-badge]:      https://img.shields.io/github/actions/workflow/status/exult/exult/ci-windows.yml?label=CI%20Windows%2FMinGW&logo=Windows&logoColor=white
-[win-msvc-badge]:       https://img.shields.io/github/actions/workflow/status/exult/exult/ci-msvc.yml?label=CI%20Windows%2FMSVC&logo=Windows&logoColor=white
-[omnios-badge]:         https://img.shields.io/github/actions/workflow/status/exult/exult/ci-omnios.yml?label=CI%20OmniOS&logoColor=white&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIj48ZyBzdHlsZT0iZmlsbDojZmZmIj48cGF0aCBkPSJNMzE2LjcwOCA1MDcuOTIxYy0zNC40ODItNi4yODQtNTQuMzM1LTEzLjg0Ni03OC40NDMtMjkuODc4LTE0LjU1LTkuNjc2LTMyLjc0LTI2LjkxNy00Mi44NjYtNDAuNjMzLTIyLjI1My0zMC4xNC0zMy41MjQtNjcuODQxLTMxLjg1Ni0xMDYuNTU3IDEuOS00NC4xMDQgMTcuNzY3LTc5Ljk1MyA0OS4xODEtMTExLjEyIDI0LjktMjQuNzA0IDUzLjAyLTQwLjA0IDg4LjUzLTQ4LjI4MiAxNC44OC0zLjQ1NCA0Ny43OTctNC4zIDYzLjc5NS0xLjY0IDcwLjY2NyAxMS43NTIgMTI2LjI1OCA2MS42NSAxNDIuMzYgMTI3Ljc4IDUuOTUgMjQuNDM3IDYuMzUgNTEuMjggMS4xNDIgNzYuNTk4LTEzLjIwNiA2NC4xOTctNjUuMzU4IDExNS4yNjUtMTMzLjg4NCAxMzEuMTAxLTcuNzIzIDEuNzg1LTE1LjQ5IDIuNDQyLTMyLjU3NCAyLjc1Ni0xMi4zMzguMjI3LTIzLjc2Mi4xNzEtMjUuMzg1LS4xMjV6bTQ2LjYzNy03NS4wMTFjMTYuNTkyLTQuNTMzIDMyLjk2My0xNS4yODMgNDQuMzItMjkuMTAzIDYuOTM2LTguNDQyIDE1LjUzNC0yNS4yNyAxOC4xNTItMzUuNTMgNi42MzctMjYuMDEgNC4yNC01NC41MDEtNi40MTktNzYuMjgyLTE3LjkzLTM2LjYzOC01My4xMjgtNTUuOTktOTMuMDUzLTUxLjE2My00MS42NDggNS4wMzYtNzMuNTc5IDM3Ljg5My03OS4zOSA4MS42OTItMS43NzIgMTMuMzU1LS43MzggMzIuMjc2IDIuNDM3IDQ0LjYyIDguOTQzIDM0Ljc2NiAzNC42MjMgNTkuODg3IDY4LjQ5NyA2Ny4wMDIgMTAuMDQ3IDIuMTEgMzUuNzY1IDEuNDEgNDUuNDU2LTEuMjM2eiIgc3R5bGU9ImRpc3BsYXk6aW5saW5lO2ZpbGw6I2ZmZjtzdHJva2Utd2lkdGg6MS4xNzc0MyIgdHJhbnNmb3JtPSJtYXRyaXgoMS4wMDQgMCAwIDEuMDE1IC0yLjE0NCAtMy45MSkiLz48cGF0aCBkPSJNMTQzLjE0NyAzOTYuMzk5Yy0yNi4zNzEtOC43MDgtNTQuNTUtMjQuODIyLTc1Ljg2NC00My4zODZDMzYuMDQ4IDMyNS44MSAxNC4wOTkgMjg3Ljk4OCA0Ljc4NiAyNDUuMzJjLTIuMy0xMC41NC0yLjYzLTE1LjUzLTIuNjUtNDAuMjE0LS4wMi0yNS4wMTIuMjgtMjkuNTY3IDIuNjcyLTQwLjUxIDcuMTg1LTMyLjg3NiAxOS43MzUtNTkuMzIgMzkuOTUyLTg0LjE4NCAzMy4wODMtNDAuNjg2IDgwLjQ5Ny02Ny4xOCAxMzQuMzEzLTc1LjA0OCAxNy45NzItMi42MjggNTIuOTk3LTEuNzEgNjkuNDY3IDEuODIzIDI3Ljg3NiA1Ljk3NyA1OS41NiAxOS42NTQgODEuMDYxIDM0Ljk5MiAzMS4yNTQgMjIuMjk1IDU2Ljg2IDU0LjM2NiA3MC4yMjcgODcuOTU2IDQuMjQ2IDEwLjY2OSAxMC45NzMgMzQuMDYgMTAuMDQ3IDM0LjkzNS0uMjY2LjI1LTUuNzk2LTEuMzAyLTEyLjI5LTMuNDUtMjEuMzYyLTcuMDY5LTQ2LjYxMi0xMC43MjMtNjYuMjcyLTkuNTkxbC0xMC43NzkuNjItNC44ODQtOS44MDJjLTYuMzEyLTEyLjY2Ny0xNi4zODktMjYuMDUzLTI3LjM4Mi0zNi4zNzMtMjEuNTU1LTIwLjIzNS00NC4yOTEtMjkuNjUtNzQuNDYtMzAuODMzLTM4LjEyNS0xLjQ5Ni02Ni43NSA5LjYwNC05MS44NjggMzUuNjI0LTE1LjYwMiAxNi4xNjItMjUuNjg0IDMzLjc0NC0zMS4yODUgNTQuNTU2LTkuMzc0IDM0LjgzOC01LjgwMyA3My44MzggOS41MDYgMTAzLjgwNyA5LjAwNiAxNy42MyAyNC41NDggMzUuMjU0IDM5Ljc4MiA0NS4xMDhsNy45MjcgNS4xMjl2MTguNTMyYzAgMTkuNzEyIDIuNDUgMzguMDY3IDcuMDQ4IDUyLjgxNyAyLjY0MSA4LjQ3MiAyLjc5NSA5LjQyIDEuNTEyIDkuMzM2LS40ODctLjAzMi02LjQ2NC0xLjktMTMuMjgzLTQuMTUxem0xMzMuMTc0LTcuMjIzYy00LjY0MS02Ljk3NS04Ljc0MS0xNS41MDQtMTAuODczLTIyLjYyLTIuNjc0LTguOTIxLTQuMjkzLTI1LjkyNS0zLjQzMy0zNi4wNWwuNzE4LTguNDU1IDcuNzM1LTQuNDZjMTYuNjM2LTkuNTkzIDM3LjM2MS0zMy4wMjEgNDYuNjk3LTUyLjc4NyAzLjk2OS04LjQwMyA0LjUzMi04LjYzIDIxLjIzOC04LjYwNCAxMi43NjguMDIgMjMuMDIgMi4yMSAzMi4zOTkgNi45MTkgOC4xODUgNC4xMDkgMTguNTUgMTIuMjk3IDIzLjEzNyAxOC4yNzdsMy4zMjYgNC4zMzctMi4xODMgNC44OTJjLTE3LjU1IDM5LjM0LTU0LjQ2MiA3NS41MjgtOTcuOTI5IDk2LjAxLTE2LjkyNyA3Ljk3Ni0xNy4xOTQgOC4wMDktMjAuODMyIDIuNTQxeiIgc3R5bGU9ImRpc3BsYXk6aW5saW5lO2ZpbGw6I2ZmZjtzdHJva2Utd2lkdGg6MS4xNzc0MyIgdHJhbnNmb3JtPSJtYXRyaXgoMS4wMDQgMCAwIDEuMDE1IC0yLjE0NCAtMy45MSkiLz48L2c+PC9zdmc+
-[cov-analysis-badge]:   https://img.shields.io/github/actions/workflow/status/exult/exult/coverity-scan.yml?label=Coverity%20Scan%20Analysis&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjYuOTUgMTA5LjA4bC0zLjUyLTkuNDUgMzcuOTYgNzAuODloLjg1bDQ3LjMzLTExOC4xM2MuODMtMi41NiA4LjI2LTIxLjc0IDguNTEtMzAuMi42My0yMS44NC0xNC4xLTIzLjgxLTI5Ljc3LTE5LjM5QzM2Ljg3IDE5LjQ2LS4yNCA2Ny44My4wMSAxMjQuNzhjLjIgNTIuOTcgMzIuNjQgOTguMjQgNzguNjUgMTE3LjM4TDI2Ljk1IDEwOS4wOE0xNzQuMzMgNS40OGMtNi4zMiAxMi43LTEzLjEgMjYuMzctMjEuNjggNDguMDhMNzkuMjIgMjQyLjM5YzE1LjA5IDYuMiAzMS42MyA5LjYgNDguOTYgOS41MiA3MC41LS4yNyAxMjcuNDItNTcuNjcgMTI3LjEzLTEyOC4xOC0uMjItNTMuODMtMzMuNzYtOTkuNy04MC45OC0xMTguMjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=
-[cov-results-badge]:    https://img.shields.io/coverity/scan/10872?label=Coverity%20Scan%20Results&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjYuOTUgMTA5LjA4bC0zLjUyLTkuNDUgMzcuOTYgNzAuODloLjg1bDQ3LjMzLTExOC4xM2MuODMtMi41NiA4LjI2LTIxLjc0IDguNTEtMzAuMi42My0yMS44NC0xNC4xLTIzLjgxLTI5Ljc3LTE5LjM5QzM2Ljg3IDE5LjQ2LS4yNCA2Ny44My4wMSAxMjQuNzhjLjIgNTIuOTcgMzIuNjQgOTguMjQgNzguNjUgMTE3LjM4TDI2Ljk1IDEwOS4wOE0xNzQuMzMgNS40OGMtNi4zMiAxMi43LTEzLjEgMjYuMzctMjEuNjggNDguMDhMNzkuMjIgMjQyLjM5YzE1LjA5IDYuMiAzMS42MyA5LjYgNDguOTYgOS41MiA3MC41LS4yNyAxMjcuNDItNTcuNjcgMTI3LjEzLTEyOC4xOC0uMjItNTMuODMtMzMuNzYtOTkuNy04MC45OC0xMTguMjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=
-[snapshots-badge]:      https://github.com/exult/exult/actions/workflows/snapshots.yml/badge.svg
-[snapshot-release-badge]:  https://img.shields.io/github/release-date-pre/exult/exult?display_date=published_at&label=Latest%20snapshot%20for%20Windows%20and%20Android
+## 🔨 編譯引擎
 
-[irc-url]:              https://web.libera.chat/#exult
-[gpl-url]:              https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
-[codefactor-url]:       https://www.codefactor.io/repository/github/exult/exult
-[codeql-url]:           https://github.com/exult/exult/actions/workflows/codeql.yml
-[android-url]:          https://github.com/exult/exult/actions/workflows/ci-android.yml
-[freebsd-url]:          https://github.com/exult/exult/actions/workflows/ci-freebsd.yml
-[ios-url]:              https://github.com/exult/exult/actions/workflows/ci-ios.yml
-[macosx-url]:           https://github.com/exult/exult/actions/workflows/ci-macos.yml
-[omnios-url]:           https://github.com/exult/exult/actions/workflows/ci-omnios.yml
-[ubuntu-url]:           https://github.com/exult/exult/actions/workflows/ci-linux.yml
-[win-mingw-url]:        https://github.com/exult/exult/actions/workflows/ci-windows.yml
-[win-msvc-url]:         https://github.com/exult/exult/actions/workflows/ci-msvc.yml
-[cov-analysis-url]:     https://github.com/exult/exult/actions/workflows/coverity-scan.yml
-[cov-results-url]:      https://scan.coverity.com/projects/exult-exult
-[snapshots-url]:        https://github.com/exult/exult/actions/workflows/snapshots.yml
-[snapshots-release-url]:    https://github.com/exult/exult/releases?q=prerelease%3Atrue
+從 clone 下來的原始碼建置。**有兩個此 fork 特有的坑**要注意:
+
+```bash
+git clone https://github.com/<你的帳號>/Exult-for-zh.git
+cd Exult-for-zh
+autoreconf -v -i
+```
+
+### 坑 1:FreeType 標頭找不到 (`ft2build.h file not found`)
+
+此 fork 為了渲染 TTF 中文字型新增了 `ttf_font.cc`,但 `configure.ac` 沒加入 FreeType
+偵測。需手動注入路徑(FreeType 的 header 在 `freetype2/` 子目錄):
+
+```bash
+export CPPFLAGS="-I/opt/homebrew/include -I/opt/homebrew/include/freetype2"
+export CFLAGS="$CPPFLAGS"; export CXXFLAGS="$CPPFLAGS"
+export LDFLAGS="-L/opt/homebrew/lib"; export LIBS="-lfreetype"
+./configure
+```
+
+### 坑 2:`use of undeclared identifier 'EXULT_FLX_SHORTCUTBAR_VGA'`
+
+`data/exult_flx.h` 由 `expack` 從 `flx.in` 自動生成(無獨立 recipe,只在 `exult.flx`
+重建時當副產物產生)。若殘留 stale header 就會缺常數。**請依序、單執行緒建置**:
+
+```bash
+make -C tools expack          # 先建生成工具
+make -C data exult.flx        # 用現在的 flx.in 重新生成 header
+grep -i shortcutbar data/exult_flx.h   # 應看到 EXULT_FLX_SHORTCUTBAR_VGA
+make                          # ⚠️ 不要用 make -j(平行會 race)
+```
+
+---
+
+## 🚀 一鍵組裝 (`setup-exult-zh.sh`)
+
+```bash
+chmod +x setup-exult-zh.sh
+```
+
+### 可攜版(預設,推薦)
+
+```bash
+./setup-exult-zh.sh --portable ~/ExultZH --src ~/git/Exult-for-zh \
+  --bg "/path/to/Ultima VII™  - The Black Gate + The Forge of Virtue.app" \
+  --si "/path/to/Ultima VII™  - Serpent Isle + The Silver Seed.app"
+```
+
+不指定 `--bg/--si` 時會自動到 `~/Downloads` 找;找不到則建立空的 `STATIC/` 供你手動放入。
+
+啟動:雙擊資料夾內的 **`ExultZH.command`**(或終端機執行)。它會依資料夾位置即時產生
+設定檔並把存檔鎖在資料夾內,所以整包可任意搬移。
+
+### 安裝到系統路徑
+
+```bash
+sudo EXULT_SRC=~/git/Exult-for-zh ./setup-exult-zh.sh --system
+```
+
+### 參數
+
+| 參數 | 說明 |
+|---|---|
+| `--portable [DEST]` | 可攜模式(預設 `~/ExultZH-Portable`) |
+| `--system` | 安裝到 `/Library/Application Support/Exult`(需 sudo) |
+| `--src PATH` | Exult-for-zh 原始碼/建置目錄 |
+| `--bg PATH` / `--si PATH` | GOG 兩款遊戲 `.app` 路徑 |
+
+可攜版資料夾結構:
+
+```
+ExultZH/
+├── exult                ← 引擎執行檔
+├── data/                ← 引擎資料 (exult.flx / exult_bg.flx / exult_si.flx …)
+├── blackgate/
+│   ├── STATIC/          ← Black Gate 遊戲檔
+│   └── patch/           ← chinese.ttf / usecode / mainshp.flx / endshape.flx
+├── serpentisle/{STATIC,patch}/
+├── exult.cfg            ← 啟動器自動產生(勿手改)
+└── ExultZH.command      ← 雙擊啟動
+```
+
+---
+
+## 📦 打包成 .app / DMG
+
+在已 `make` 成功的建置目錄:
+
+```bash
+make bundle          # 本機自用(連結 Homebrew 動態庫)
+make bundle_shared   # 跨機可攜(dylibbundler 把動態庫收進 .app)
+make osxdmg          # 連同拖曳安裝介面打包成 .dmg
+```
+
+輸出為建置目錄下的 `Exult.app`。注意 `make bundle` **只含引擎**,不含遊戲與中文 patch
+——這些要另外就定位(見下)。未啟用 code signing 時首次開啟需右鍵 →「打開」過 Gatekeeper。
+
+---
+
+## 🗂️ 遊戲資料放哪 / `exult.cfg`
+
+遊戲**不一定**要放 `/Library/Application Support/Exult`。路徑解析(macOS):
+
+- **遊戲 STATIC 預設搜尋位置**:`/Library/Application Support/Exult/<遊戲>`(系統,需 sudo)
+- **設定檔與存檔**:`~/Library/Application Support/Exult/`(你的家目錄)
+
+要放別處(免 sudo),在 `~/Library/Application Support/Exult/exult.cfg` 指定 `path`:
+
+```xml
+<?xml version="1.0"?>
+<config>
+  <disk>
+    <game>
+      <blackgate><path>/Users/you/Games/U7/blackgate</path></blackgate>
+      <serpentisle><path>/Users/you/Games/U7/serpentisle</path></serpentisle>
+    </game>
+  </disk>
+</config>
+```
+
+對應放成 `<path>/static`(遊戲檔)與 `<path>/patch`(中文 patch)。
+
+> **`exult.cfg` 不見?** Exult **不會一啟動就建立它**——只在乾淨結束或於選單改設定時才寫出。
+> 且 `~/Library` 在 Finder 預設隱藏。最可靠是自己用終端機建立此檔。
+
+| 放哪 | sudo | 怎麼讓 .app 找到 |
+|---|---|---|
+| `/Library/Application Support/Exult`(預設) | 要 | 不用設定 |
+| 任意資料夾 | 不用 | `~/Library/.../exult.cfg` 設 `path` |
+| 完全自包在 .app 內 | 不用 | 執行檔換成 wrapper,用 `-c` 指 app 內設定 |
+
+---
+
+## 🔧 疑難排解
+
+| 症狀 | 原因 / 解法 |
+|---|---|
+| `ft2build.h file not found` | FreeType 沒進 configure → 見「坑 1」注入 `freetype2` 路徑 |
+| `EXULT_FLX_SHORTCUTBAR_VGA` undeclared | stale 生成 header → 見「坑 2」依序重建、勿平行 |
+| **SFX 顯示 Disabled** | 原版無 Exult 格式音效,需自 [exult.info](https://exult.info) 下載 SFX pack 放進 data 夾 |
+| 遊戲**全英文**、看不到中文 | patch 未安裝;`patch/usecode`(無副檔名)+ `patch/chinese.ttf` 要就位 |
+| 中文變**亂碼** | 用到 **Big5** 版 usecode。本引擎吃 **UTF-8**,只能用 `usecode_builds/usecode.2026*` |
+| 物品名仍英文 | 物品名在 `STATIC/TEXT.FLX`,需以 `textpack` 重打包翻譯版覆蓋 |
+| `npc.dat … errno 2`(建 gamedat 失敗) | 可寫目錄鏈不存在 / `$HOME` 被污染。可攜啟動器已 `mkdir -p` 預建 |
+| `exult.cfg` 不存在 | 見上節:啟動不會建立、`~/Library` 隱藏;自行建立即可 |
+
+### 技術備註
+
+- 引擎以 **UTF-8** 解碼(`shapes/ttf_font.cc`),codepage 預設 `UTF8`。
+- 中文字型固定讀 `<PATCH>/chinese.ttf`;對話讀 `<PATCH>/usecode`(無副檔名)。
+- macOS **沒有** `-p` portable 旗標(僅 Windows 編譯),改用 `-c <設定檔>`。
+
+---
+
+## 📜 授權
+
+- Exult 引擎與本 fork 引擎程式碼:**GPL-2.0**。
+- 繁體中文翻譯與 CJK 修改:版權屬 [pmanyeh/Exult-for-zh](https://github.com/pmanyeh/Exult-for-zh) 作者。
+- 遊戲資料 *Ultima VII*:版權屬原權利人,使用者需自備正版,本倉庫不散布。
+- 本倉庫之 macOS 工具腳本:沿用上游 GPL-2.0。
