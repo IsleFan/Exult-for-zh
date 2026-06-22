@@ -869,6 +869,23 @@ void setup_data_dir(const std::string& data_path, const char* runpath) {
 	return;
 #endif
 
+#if defined(MACOSX)
+	// Chinese localization build: default the Exult engine data folder to the
+	// user's Application Support tree (~/Library/Application Support/Exult/data)
+	// so it lives next to the games and needs no system-wide install. Only
+	// applies when the user has not set an explicit data_path in the cfg.
+	if (data_path == EXULT_DATADIR) {
+		if (const char* home = getenv("HOME")) {
+			string homedata(home);
+			homedata += "/Library/Application Support/Exult/data";
+			add_system_path("<DATA>", homedata);
+			if (U7exists(EXULT_FLX)) {
+				return;
+			}
+		}
+	}
+#endif
+
 	// First, try the cfg value:
 	add_system_path("<DATA>", data_path);
 	if (U7exists(EXULT_FLX)) {
@@ -977,8 +994,15 @@ static string Get_gamehome_dir(const string& home_dir, const string& config_dir)
 	gamehome_dir += "/game";
 	return gamehome_dir;
 #elif defined(MACOSX)
-	ignore_unused_variable_warning(home_dir, config_dir);
-	return "/Library/Application Support/Exult";
+	// Chinese localization build: read games from the user's Application
+	// Support folder instead of the system-wide /Library (no sudo / no
+	// system install needed). This makes <GAMEHOME> match <SAVEHOME>, so a
+	// game's static, patch, gamedat and saves all live together under
+	// ~/Library/Application Support/Exult.
+	ignore_unused_variable_warning(config_dir);
+	string gamehome_dir(home_dir);
+	gamehome_dir += "/Library/Application Support/Exult";
+	return gamehome_dir;
 #elif defined(SDL_PLATFORM_HAIKU)
 	ignore_unused_variable_warning(config_dir);
 	string gamehome_dir(home_dir);
