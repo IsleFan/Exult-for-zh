@@ -83,6 +83,13 @@ jobs:
           export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$(brew --prefix libxml2)/bin:$PATH"
           export PKG_CONFIG_PATH="$(brew --prefix zlib)/lib/pkgconfig:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig"
           make -j3
+          make bundle_shared
+          make osxdmg
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Exult-macOS-Build
+          path: Exult*.dmg
   notify:
     if: ${{ always() }}
     needs:
