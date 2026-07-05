@@ -3,7 +3,22 @@
 在 **macOS (Apple Silicon)** 上編譯、組裝、打包 *Ultima VII* 繁體中文版的完整流程與一鍵工具。
 
 本倉庫在 [pmanyeh/Exult-for-zh](https://github.com/pmanyeh/Exult-for-zh) 的繁中化成果之上,
-補上 macOS 端的**自動組裝腳本** (`setup-exult-zh.sh`) 與**完整建置/疑難排解文件**。
+補上 macOS 端的**打包工具**(`macosx/make_zh_dmg.sh`)與**完整建置/疑難排解文件**。
+
+---
+
+## 🎮 直接下載玩(免編譯)
+
+到 [**Releases**](../../releases) 下載 **`Ultima7_BlackGate_zhTW_v1.1_Portable.zip`**(可攜版):
+
+1. 解壓縮到任何地方(隨身碟也行)。
+2. 第一次執行:對 `Exult.app` 按住 **Control 鍵點一下** → 「打開」→ 再按「打開」。
+3. 依跳出的視窗指引放入你的**正版**遊戲 STATIC 檔案(有裝 GOG 版可用「自動搜尋」一鍵複製)。
+4. 開始遊戲!
+
+**所有東西**(中文化資料、遊戲檔、存檔、設定)都住在旁邊的 `ExultData/` 資料夾——
+備份、搬機、換路徑就是複製整個資料夾;更新版本只要換掉 `Exult.app`,存檔不動。
+詳見包內的 `使用說明.txt`。
 
 ---
 
@@ -25,10 +40,11 @@
 
 ## 🧩 本倉庫提供什麼
 
-- **`setup-exult-zh.sh`** — 一鍵把「已編譯的引擎 + 繁中字型/對話/圖檔 + 你的正版遊戲檔」
-  組裝成可執行環境,支援兩種模式:
-  - `--portable` 組成自帶引擎與遊戲、整包可搬移的資料夾(預設)
-  - `--system` 安裝到 macOS 標準路徑
+- **`macosx/make_zh_dmg.sh`** — 一鍵把「已編譯的引擎 + 中文化整合包」打包成:
+  - 拖曳安裝 **DMG**(資料放家目錄 Application Support)
+  - 完全**可攜 zip**(`Exult.app` + `ExultData/` 同層,整包任意搬移)
+- **`macosx/zh_launcher.sh`** — App 首次啟動器:自動展開中文化資料、對話框引導
+  放入正版 STATIC(含 Spotlight 自動搜尋)、絕不覆蓋使用者存檔與設定。
 - 完整的**建置流程**與**疑難排解**文件(見下)。
 
 ---
@@ -81,55 +97,50 @@ make                          # ⚠️ 不要用 make -j(平行會 race)
 
 ---
 
-## 🚀 一鍵組裝 (`setup-exult-zh.sh`)
+## 🚀 打包發佈 (`macosx/make_zh_dmg.sh`)
+
+把「已編譯的引擎 + 中文化整合包」打包成發佈用安裝檔,一條指令:
 
 ```bash
-chmod +x setup-exult-zh.sh
+# 拖曳安裝 DMG(資料放 ~/Library/Application Support/Exult)
+./macosx/make_zh_dmg.sh 1.1
+
+# 完全可攜 zip(Exult.app + ExultData 同層,整包帶著走)
+./macosx/make_zh_dmg.sh 1.1 release/Ultima7_BlackGate_zhTW_vx.x_for_Mac Exult.app portable
 ```
 
-### 可攜版(預設,推薦)
+腳本會自動完成:
 
-```bash
-./setup-exult-zh.sh --portable ~/ExultZH --src ~/git/Exult-for-zh \
-  --bg "/path/to/Ultima VII™  - The Black Gate + The Forge of Virtue.app" \
-  --si "/path/to/Ultima VII™  - Serpent Isle + The Silver Seed.app"
-```
+1. **dylibbundler** 把 Homebrew 動態庫收進 `.app`(跨機可攜,免裝 Homebrew)。
+2. 注入中文化 payload(`data/`、`blackgate/patch`、mods)到 `Contents/Resources/zh-content/`,
+   並把 `chinese.ttf` 補進 `patch/`(引擎零設定的預設字型路徑)。
+3. 把整合包的 `exult.cfg` 轉成 macOS 模板(修正 Windows 相對路徑/反斜線,
+   補上 `savegame_path`/`gamedat_path`),調校值原封保留。
+4. 安裝**首次啟動器**(`macosx/zh_launcher.sh`):自動展開中文化資料、
+   對話框引導放入正版 STATIC(含 Spotlight 自動搜尋)、擷取引擎輸出到紀錄檔。
+5. ad-hoc 簽名 → `create-dmg` / `ditto` 打包。
 
-不指定 `--bg/--si` 時會自動到 `~/Downloads` 找;找不到則建立空的 `STATIC/` 供你手動放入。
+### 可攜版運作原理
 
-啟動:雙擊資料夾內的 **`ExultZH.command`**(或終端機執行)。它會依資料夾位置即時產生
-設定檔並把存檔鎖在資料夾內,所以整包可任意搬移。
-
-### 安裝到系統路徑
-
-```bash
-sudo EXULT_SRC=~/git/Exult-for-zh ./setup-exult-zh.sh --system
-```
-
-### 參數
-
-| 參數 | 說明 |
-|---|---|
-| `--portable [DEST]` | 可攜模式(預設 `~/ExultZH-Portable`) |
-| `--system` | 安裝到 `/Library/Application Support/Exult`(需 sudo) |
-| `--src PATH` | Exult-for-zh 原始碼/建置目錄 |
-| `--bg PATH` / `--si PATH` | GOG 兩款遊戲 `.app` 路徑 |
-
-可攜版資料夾結構:
+啟動器偵測到 `Exult.app` 旁有 **`ExultData/`** 資料夾即切換可攜模式:
+`HOME` 重導向進去、設定檔用 `./` 相對路徑、以 `ExultData` 為工作目錄啟動引擎。
+整個資料夾搬到哪都能跑;拆開則自動退回一般安裝模式。
 
 ```
-ExultZH/
-├── exult                ← 引擎執行檔
-├── data/                ← 引擎資料 (exult.flx / exult_bg.flx / exult_si.flx …)
-├── blackgate/
-│   ├── STATIC/          ← Black Gate 遊戲檔
-│   └── patch/           ← chinese.ttf / usecode / mainshp.flx / endshape.flx
-├── serpentisle/{STATIC,patch}/
-├── exult.cfg            ← 啟動器自動產生(勿手改)
-└── ExultZH.command      ← 雙擊啟動
+Ultima7_BlackGate_zhTW_v1.1_Portable/
+├── Exult.app            ← 雙擊啟動
+├── ExultData/
+│   ├── blackgate/{STATIC,patch,mods,gamedat}/   ← 遊戲檔/中文化/存檔
+│   ├── data/                                    ← 引擎資料、字型、音樂
+│   └── Library/Preferences/exult.cfg            ← 設定檔(預先調校)
+└── 使用說明.txt
 ```
+
+除錯:引擎的錯誤輸出在 `ExultData/Library/Logs/Exult_engine.log`
+(一般安裝模式在 `~/Library/Logs/`)。
 
 ---
+
 
 ## 📦 打包成 .app / DMG
 
@@ -209,12 +220,15 @@ make osxdmg          # 連同拖曳安裝介面打包成 .dmg
 | `npc.dat … errno 2`(建 gamedat 失敗) | 可寫目錄鏈不存在 / `$HOME` 被污染。可攜啟動器已 `mkdir -p` 預建 |
 | `exult.cfg` 找不到 | 在 **`~/Library/Preferences/exult.cfg`**(隱藏);啟動不會自動建立,乾淨結束後才寫出 |
 | 遊戲讀不到 / 要 sudo | 確認資料在**家目錄** `~/Library/Application Support/Exult/`(本 fork 新預設),不是系統層 `/Library` |
+| App **閃退**(無 crash report) | 多半是引擎乾淨例外退出。看引擎紀錄:可攜版 `ExultData/Library/Logs/Exult_engine.log`,安裝版 `~/Library/Logs/Exult_engine.log` |
+| 輸入角色名後退出 | 存檔目錄建不起來(舊版 cfg 缺 `savegame_path`/`gamedat_path`)→ 換 v1.1 以上的包,或刪掉 `exult.cfg` 重新啟動讓它重建 |
 
 ### 技術備註
 
 - 引擎以 **UTF-8** 解碼(`shapes/ttf_font.cc`),codepage 預設 `UTF8`。
 - 中文字型固定讀 `<PATCH>/chinese.ttf`;對話讀 `<PATCH>/usecode`(無副檔名)。
-- macOS **沒有** `-p` portable 旗標(僅 Windows 編譯),改用 `-c <設定檔>`。
+- 引擎本身的 `-p` portable 旗標僅 Windows 編譯有;macOS 的可攜模式由啟動器實現
+  (偵測 `ExultData/` → 重導向 `HOME` + 相對路徑 cfg),不需引擎旗標。
 - **本 fork 已把 macOS 預設資料路徑(`<DATA>` 與 `<GAMEHOME>`)改到家目錄**
   `~/Library/Application Support/Exult/`,使其與 `<SAVEHOME>` 一致、免 sudo(見「遊戲資料放哪」)。
 
