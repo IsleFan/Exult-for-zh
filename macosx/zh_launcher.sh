@@ -126,18 +126,62 @@ if [ "$PORTABLE" = "1" ]; then
         ;;
     esac
 fi
-mkdir -p "$SUPPORT" 2>/dev/null
-if ! ( : >"$SUPPORT/.zh_write_test" ) 2>/dev/null; then
+# Map a protected location to its TCC service name (for tccutil reset).
+tcc_service() {
+    case "$1" in
+    "$HOME/Downloads"*) echo SystemPolicyDownloadsFolder ;;
+    "$HOME/Desktop"*)   echo SystemPolicyDesktopFolder ;;
+    "$HOME/Documents"*) echo SystemPolicyDocumentsFolder ;;
+    /Volumes/*)         echo SystemPolicyRemovableVolumes ;;
+    *)                  echo "" ;;
+    esac
+}
+
+can_write() {
+    mkdir -p "$SUPPORT" 2>/dev/null
+    ( : >"$SUPPORT/.zh_write_test" ) 2>/dev/null || return 1
+    rm -f "$SUPPORT/.zh_write_test"
+    return 0
+}
+
+# The Files-and-Folders permission can't be requested directly, but resetting
+# our TCC record (tccutil) makes the NEXT write re-trigger the system's own
+# permission prompt — so "重新要求權限" reset + retry effectively re-asks.
+while ! can_write; do
     log "write test failed in $SUPPORT"
-    alert "無法寫入資料夾:
+    if [ "${EXULT_ZH_NONINTERACTIVE:-0}" = "1" ]; then
+        exit 1
+    fi
+    svc=$(tcc_service "$SUPPORT")
+    choice=$(dialog "無法寫入資料夾(macOS 權限不足):
 $SUPPORT
 
-多半是 macOS 隱私保護(下載/桌面/文件)或權限問題。
-請把整個資料夾搬到例如「家目錄/Games」,
-或到 系統設定 → 隱私權與安全性 → 檔案與檔案夾 允許 Exult 存取。"
-    exit 1
-fi
-rm -f "$SUPPORT/.zh_write_test"
+可以讓我重新向系統要求權限——按下後若跳出
+「Exult 想要取用…」的系統視窗,請選「允許」。
+
+也可以把整個資料夾搬到例如「家目錄/Games」後再開啟。" \
+        "結束" "打開系統設定" "重新要求權限")
+    case "$choice" in
+    "重新要求權限")
+        if [ -n "$svc" ]; then
+            /usr/bin/tccutil reset "$svc" info.exult.zh >>"$LOG" 2>&1
+            log "tccutil reset $svc info.exult.zh"
+        fi
+        # loop retries can_write — the fresh attempt triggers the OS prompt
+        /bin/sleep 1
+        ;;
+    "打開系統設定")
+        /usr/bin/open "x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders" 2>>"$LOG"
+        next=$(dialog "已打開系統設定。請到「隱私權與安全性 → 檔案與檔案夾」
+找到 Exult,勾選對應資料夾的存取權後,按「重新檢查」。" \
+            "結束" "重新檢查")
+        [ "$next" != "重新檢查" ] && exit 1
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+done
 
 # --------------------------------------------------------------------------
 # 1. Sync localization payload into Application Support
