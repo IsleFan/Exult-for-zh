@@ -99,9 +99,34 @@ if [ -f "$PACK/exult.cfg" ]; then
         -e 's|\./Ultima_7_SI|@EXULT_HOME@/serpentisle|g' \
         -e 's|\./Ultima_7|@EXULT_HOME@/blackgate|g' \
         -e 's|data\\|@EXULT_HOME@/data/|g' \
-        "$PACK/exult.cfg" >"$ZH/exult.cfg.template"
+        "$PACK/exult.cfg" >"$ZH/exult.cfg.template.tmp"
+    # Without explicit savegame_path/gamedat_path the engine defaults them to
+    # <SAVEHOME>/<game> — a directory chain that doesn't exist in portable
+    # mode, and U7mkdir is non-recursive, so entering the game dies on the
+    # first gamedat/autosave write. Pin saves next to the game data.
+    if ! grep -q "savegame_path" "$ZH/exult.cfg.template.tmp"; then
+        awk '{
+            print
+            if (match($0, /<patch>@EXULT_HOME@\/(blackgate|serpentisle)\/patch<\/patch>/)) {
+                game = $0
+                sub(/.*<patch>@EXULT_HOME@\//, "", game)
+                sub(/\/patch<\/patch>.*/, "", game)
+                ind = $0
+                sub(/[^ \t].*/, "", ind)
+                print ind "<savegame_path>@EXULT_HOME@/" game "</savegame_path>"
+                print ind "<gamedat_path>@EXULT_HOME@/" game "/gamedat</gamedat_path>"
+            }
+        }' "$ZH/exult.cfg.template.tmp" >"$ZH/exult.cfg.template"
+        rm -f "$ZH/exult.cfg.template.tmp"
+    else
+        mv "$ZH/exult.cfg.template.tmp" "$ZH/exult.cfg.template"
+    fi
     if grep -qE '\./Ultima|\./data|data\\' "$ZH/exult.cfg.template"; then
         echo "error: exult.cfg still contains unconverted relative/Windows paths" >&2
+        exit 1
+    fi
+    if ! grep -q "gamedat_path" "$ZH/exult.cfg.template"; then
+        echo "error: exult.cfg template missing gamedat_path" >&2
         exit 1
     fi
     echo "    converted exult.cfg -> zh-content/exult.cfg.template"

@@ -39,6 +39,9 @@ if [ -d "$PORTABLE_ROOT/ExultData" ]; then
     PORTABLE=1
     export HOME="$PORTABLE_ROOT/ExultData"
     SUPPORT="$PORTABLE_ROOT/ExultData"
+    # Anything the engine derives from <SAVEHOME> lands under this chain —
+    # pre-create it (U7mkdir in the engine is non-recursive).
+    mkdir -p "$HOME/Library/Application Support/Exult" 2>/dev/null
 else
     SUPPORT="$HOME/Library/Application Support/Exult"
 fi
@@ -253,4 +256,11 @@ if [ "${EXULT_ZH_NO_EXEC:-0}" = "1" ]; then
     echo "WOULD_EXEC:$MACOS_DIR/exult (cwd=$PWD)"
     exit 0
 fi
-exec "$MACOS_DIR/exult" "$@"
+# Finder-launched apps lose stdout/stderr — capture the engine's output so
+# errors/exceptions are diagnosable after the fact. Keep it bounded.
+ENGINE_LOG="$LOG_DIR/Exult_engine.log"
+if [ -f "$ENGINE_LOG" ] && [ "$(/usr/bin/stat -f %z "$ENGINE_LOG" 2>/dev/null || echo 0)" -gt 5242880 ]; then
+    mv -f "$ENGINE_LOG" "$ENGINE_LOG.old"
+fi
+echo "===== $(date '+%Y-%m-%d %H:%M:%S') engine start =====" >>"$ENGINE_LOG"
+exec "$MACOS_DIR/exult" "$@" >>"$ENGINE_LOG" 2>&1
