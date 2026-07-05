@@ -80,6 +80,24 @@ if [ ! -f "$ZH/blackgate/patch/chinese.ttf" ]; then
     cp "$PACK/data/chinese.ttf" "$ZH/blackgate/patch/chinese.ttf"
     echo "    added chinese.ttf -> blackgate/patch/ (engine default font path)"
 fi
+# Preset exult.cfg: the pack ships a Windows-flavored cfg (relative paths,
+# backslashes). Rewrite those for the macOS layout, leaving all tuning values
+# (font sizes, shadows, brightness boosts...) untouched. @EXULT_HOME@ is
+# substituted with the real Application Support path by the launcher at
+# install time.
+if [ -f "$PACK/exult.cfg" ]; then
+    sed \
+        -e 's|>\./data<|>@EXULT_HOME@/data<|g' \
+        -e 's|\./Ultima_7_SI|@EXULT_HOME@/serpentisle|g' \
+        -e 's|\./Ultima_7|@EXULT_HOME@/blackgate|g' \
+        -e 's|data\\|@EXULT_HOME@/data/|g' \
+        "$PACK/exult.cfg" >"$ZH/exult.cfg.template"
+    if grep -qE '\./Ultima|\./data|data\\' "$ZH/exult.cfg.template"; then
+        echo "error: exult.cfg still contains unconverted relative/Windows paths" >&2
+        exit 1
+    fi
+    echo "    converted exult.cfg -> zh-content/exult.cfg.template"
+fi
 printf '%s\n' "$VERSION" >"$ZH/VERSION"
 
 echo "==> Installing first-run launcher"

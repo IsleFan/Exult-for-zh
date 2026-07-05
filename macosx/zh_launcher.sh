@@ -106,6 +106,19 @@ else
 fi
 
 # --------------------------------------------------------------------------
+# 1b. Install the preset exult.cfg on first run only — an existing cfg is the
+#     user's own tuning and is never overwritten. (To re-apply the preset:
+#     delete ~/Library/Preferences/exult.cfg and relaunch.)
+# --------------------------------------------------------------------------
+CFG="$HOME/Library/Preferences/exult.cfg"
+if [ ! -f "$CFG" ] && [ -f "$PAYLOAD/exult.cfg.template" ]; then
+    mkdir -p "$HOME/Library/Preferences"
+    sed "s|@EXULT_HOME@|$SUPPORT|g" "$PAYLOAD/exult.cfg.template" >"$CFG" \
+        && log "installed preset exult.cfg" \
+        || log "WARNING: failed to install preset exult.cfg"
+fi
+
+# --------------------------------------------------------------------------
 # 2. Make sure the user's own game data is in place
 # --------------------------------------------------------------------------
 has_static() {
