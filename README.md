@@ -15,10 +15,10 @@
    ⚠️ 別放「下載/桌面/文件」——macOS 隱私保護會擋遊戲讀寫,進不了遊戲。
    放錯位置也沒關係:啟動時會跳警告,按**「自動搬移(推薦)」**即可
    (過程中若系統詢問「Exult 想要控制 Finder」請按允許)。
-2. 第一次執行會被 Gatekeeper 攔下(「Apple 無法驗證…」,未付費簽章的正常現象),二選一:
-   * **終端機**(最快):`xattr -dr com.apple.quarantine ~/Games/Ultima7_BlackGate_zhTW_v1.1_Portable`
-   * **系統設定** → 隱私權與安全性 → 「安全性」區『已封鎖「Exult」』→ **仍要打開**
-   (舊版 macOS 可 Control+點擊 → 打開;macOS 15+ 已移除此捷徑)
+2. 第一次執行會被 Gatekeeper 攔下(「Apple 無法驗證…」,未付費簽章的正常現象)。
+   打開「終端機」輸入 `xattr -dr com.apple.quarantine `(結尾留一個空格),
+   把整個資料夾**拖進終端機視窗**(自動填入路徑)再按 Enter,之後即可雙擊啟動。
+   (「系統設定 → 仍要打開」對這種 App 實測無效;Control+點擊在 macOS 15+ 已移除)
 3. 依跳出的視窗指引放入你的**正版**遊戲 STATIC 檔案(有裝 GOG 版可用「自動搜尋」一鍵複製)。
 4. 開始遊戲!
 
