@@ -35,6 +35,7 @@ APP_TITLE="Exult 中文版"
 APP_ROOT="$(cd "$MACOS_DIR/../.." && pwd)"
 PORTABLE_ROOT="$(dirname "$APP_ROOT")"
 PORTABLE=0
+REAL_HOME="$HOME"    # keep the pre-redirect home for TCC path matching
 if [ -d "$PORTABLE_ROOT/ExultData" ]; then
     PORTABLE=1
     export HOME="$PORTABLE_ROOT/ExultData"
@@ -51,7 +52,24 @@ MARKER="$SUPPORT/.zh_content_version"
 LOG_DIR="$HOME/Library/Logs"
 mkdir -p "$LOG_DIR" 2>/dev/null
 LOG="$LOG_DIR/Exult_zh_launcher.log"
+# The primary log lives inside HOME — the very place TCC may be blocking.
+# Fall back to /tmp so write-permission failures remain diagnosable.
+if ! ( : >>"$LOG" ) 2>/dev/null; then
+    LOG="${TMPDIR:-/tmp}/Exult_zh_launcher_$(id -u).log"
+fi
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >>"$LOG" 2>/dev/null; }
+log "=== launcher start (app: $0, pid: $$) ==="
+
+# Single instance (per app copy): queued LaunchServices events or double-
+# clicks can spawn a second launcher whose stacked dialogs wreck the flow —
+# later copies of THIS app path exit; other copies elsewhere are unaffected.
+for pid in $(pgrep -f "MacOS/ExultLauncher"); do
+    [ "$pid" = "$$" ] && continue
+    if /bin/ps -o command= -p "$pid" 2>/dev/null | /usr/bin/grep -qF "$MACOS_DIR/ExultLauncher"; then
+        log "another launcher instance for this app running (pid $pid) — exiting"
+        exit 0
+    fi
+done
 
 # Dialogs use plain `display dialog` (NOT `tell application "System Events"`):
 # scripting System Events needs the TCC Automation permission, which a
@@ -112,16 +130,68 @@ esac
 # --------------------------------------------------------------------------
 if [ "$PORTABLE" = "1" ]; then
     case "$PORTABLE_ROOT" in
-    "$HOME/Downloads"*|"$HOME/Desktop"*|"$HOME/Documents"*)
+    "$REAL_HOME/Downloads"*|"$REAL_HOME/Desktop"*|"$REAL_HOME/Documents"*)
         log "portable root in TCC-protected location: $PORTABLE_ROOT"
         if [ "${EXULT_ZH_NONINTERACTIVE:-0}" != "1" ]; then
-            choice=$(dialog "這個資料夾位於 macOS 隱私保護區(下載/桌面/文件),
-系統會擋下遊戲的存檔與設定寫入,導致無法進入遊戲。
+            choice=$(dialog "這個資料夾位於 macOS 隱私保護區(下載/桌面/文件)。
+實測系統會直接擋下遊戲讀寫、連授權視窗都不會出現,
+遊戲將無法進行。
 
-請把整個資料夾(含 Exult.app 與 ExultData)搬到別處,
-例如家目錄下的「Games」資料夾,再重新開啟。" \
-                "仍要嘗試" "結束")
-            [ "$choice" != "仍要嘗試" ] && exit 0
+按「自動搬移」,我會把整個資料夾搬到「家目錄/Games」
+並自動重新啟動——存檔與所有資料原封不動。" \
+                "結束" "仍要嘗試" "自動搬移(推薦)")
+            log "TCC advisory choice: '$choice'"
+            case "$choice" in
+            "自動搬移(推薦)")
+                DEST_BASE="$REAL_HOME/Games"
+                TARGET="$DEST_BASE/$(basename "$PORTABLE_ROOT")"
+                n=2
+                while [ -e "$TARGET" ]; do
+                    TARGET="$DEST_BASE/$(basename "$PORTABLE_ROOT") $n"
+                    n=$((n + 1))
+                done
+                mkdir -p "$DEST_BASE" 2>/dev/null
+                relocated=""
+                # 1) Plain copy out (TCC denies mv/rename out of Downloads;
+                #    on some systems even recursive reads get denied).
+                if /usr/bin/ditto "$PORTABLE_ROOT" "$TARGET" 2>>"$LOG"; then
+                    relocated="$TARGET"
+                    log "copied to $TARGET"
+                else
+                    rm -rf "$TARGET" 2>/dev/null
+                    # 2) Ask Finder to do the move with ITS permissions.
+                    #    This triggers the OS Automation prompt (「想要控制
+                    #    "Finder"」)— the one TCC prompt that reliably shows.
+                    log "ditto denied; trying Finder move (expect Automation prompt)"
+                    FINDER_DEST="$DEST_BASE/$(basename "$PORTABLE_ROOT")"
+                    if [ ! -e "$FINDER_DEST" ] && /usr/bin/osascript -e "tell application \"Finder\" to move (POSIX file \"$PORTABLE_ROOT\") to (POSIX file \"$DEST_BASE\")" >>"$LOG" 2>&1; then
+                        relocated="$FINDER_DEST"
+                        log "Finder moved to $FINDER_DEST"
+                    fi
+                fi
+                if [ -n "$relocated" ] && [ -d "$relocated" ]; then
+                    alert "已搬移到:
+$relocated
+
+即將從新位置啟動。若「下載」裡還留有舊資料夾,
+之後可自行丟到垃圾桶。"
+                    /usr/bin/open "$relocated/$(basename "$APP_ROOT")"
+                    exit 0
+                fi
+                # 3) Last resort: put both folders on screen for a hand drag.
+                log "all relocation attempts failed — opening Finder windows"
+                /usr/bin/open "$DEST_BASE" 2>>"$LOG"
+                /usr/bin/open -R "$PORTABLE_ROOT" 2>>"$LOG"
+                alert "自動搬移被系統擋下了。
+
+已幫你打開兩個 Finder 視窗:
+請把整個「$(basename "$PORTABLE_ROOT")」資料夾
+拖曳到「Games」視窗裡,然後從新位置開啟 Exult。"
+                exit 1
+                ;;
+            "仍要嘗試") ;;
+            *) exit 0 ;;
+            esac
         fi
         ;;
     esac
@@ -129,11 +199,11 @@ fi
 # Map a protected location to its TCC service name (for tccutil reset).
 tcc_service() {
     case "$1" in
-    "$HOME/Downloads"*) echo SystemPolicyDownloadsFolder ;;
-    "$HOME/Desktop"*)   echo SystemPolicyDesktopFolder ;;
-    "$HOME/Documents"*) echo SystemPolicyDocumentsFolder ;;
-    /Volumes/*)         echo SystemPolicyRemovableVolumes ;;
-    *)                  echo "" ;;
+    "$REAL_HOME/Downloads"*) echo SystemPolicyDownloadsFolder ;;
+    "$REAL_HOME/Desktop"*)   echo SystemPolicyDesktopFolder ;;
+    "$REAL_HOME/Documents"*) echo SystemPolicyDocumentsFolder ;;
+    /Volumes/*)              echo SystemPolicyRemovableVolumes ;;
+    *)                       echo "" ;;
     esac
 }
 
@@ -153,6 +223,7 @@ while ! can_write; do
         exit 1
     fi
     svc=$(tcc_service "$SUPPORT")
+    log "write-loop: svc='$svc'"
     choice=$(dialog "無法寫入資料夾(macOS 權限不足):
 $SUPPORT
 
@@ -161,6 +232,7 @@ $SUPPORT
 
 也可以把整個資料夾搬到例如「家目錄/Games」後再開啟。" \
         "結束" "打開系統設定" "重新要求權限")
+    log "write-loop choice: '$choice'"
     case "$choice" in
     "重新要求權限")
         if [ -n "$svc" ]; then
@@ -339,7 +411,7 @@ if [ "${EXULT_ZH_NO_EXEC:-0}" = "1" ]; then
 fi
 # Finder-launched apps lose stdout/stderr — capture the engine's output so
 # errors/exceptions are diagnosable after the fact. Keep it bounded.
-ENGINE_LOG="$LOG_DIR/Exult_engine.log"
+ENGINE_LOG="$(dirname "$LOG")/Exult_engine.log"
 if [ -f "$ENGINE_LOG" ] && [ "$(/usr/bin/stat -f %z "$ENGINE_LOG" 2>/dev/null || echo 0)" -gt 5242880 ]; then
     mv -f "$ENGINE_LOG" "$ENGINE_LOG.old"
 fi
