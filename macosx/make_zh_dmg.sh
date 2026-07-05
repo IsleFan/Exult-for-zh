@@ -7,14 +7,19 @@
 # signs everything and wraps it in a drag-install DMG.
 #
 # Usage:
-#   macosx/make_zh_dmg.sh [version] [pack_dir] [src_app]
+#   macosx/make_zh_dmg.sh [version] [pack_dir] [src_app] [portable]
 #
 #   version   release version, default: 1.1
 #   pack_dir  localization pack with data/ + blackgate/ + Readme.txt,
 #             default: release/Ultima7_BlackGate_zhTW_vx.x_for_Mac
 #   src_app   built engine bundle, default: ./Exult.app
+#   portable  literal "portable" → build the fully-portable zip instead:
+#             a folder with Exult.app + ExultData/ side by side. The launcher
+#             detects the ExultData sibling and keeps ALL data (game files,
+#             saves, config, logs) inside it — movable across disks/machines.
 #
 # Output: release/Ultima7_BlackGate_zhTW_v<version>_for_Mac.dmg
+#     or: release/Ultima7_BlackGate_zhTW_v<version>_Portable.zip
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
@@ -24,9 +29,12 @@ REPO="$PWD"
 VERSION="${1:-1.1}"
 PACK="${2:-release/Ultima7_BlackGate_zhTW_vx.x_for_Mac}"
 SRC_APP="${3:-Exult.app}"
+MODE="${4:-dmg}"
 
 DMG_NAME="Ultima7_BlackGate_zhTW_v${VERSION}_for_Mac"
 OUT_DMG="release/${DMG_NAME}.dmg"
+PORTABLE_NAME="Ultima7_BlackGate_zhTW_v${VERSION}_Portable"
+OUT_ZIP="release/${PORTABLE_NAME}.zip"
 BUILD="release/.build_zh_dmg"
 APP="$BUILD/Exult.app"
 
@@ -117,6 +125,42 @@ find "$APP/Contents/Resources/lib" -name '*.dylib' -exec codesign --force --sign
 codesign --force --sign - "$APP/Contents/MacOS/exult"
 codesign --force --sign - "$APP"
 codesign --verify --deep "$APP"
+
+if [ "$MODE" = "portable" ]; then
+    echo "==> Building portable zip"
+    PROOT="$BUILD/$PORTABLE_NAME"
+    mkdir -p "$PROOT/ExultData"
+    mv "$APP" "$PROOT/Exult.app"
+    cat >"$PROOT/ExultData/遊戲資料都會放在這裡.txt" <<'EOF'
+這個資料夾存放 Exult 中文版的所有資料:
+中文化檔案、你的正版遊戲檔 (blackgate/STATIC)、存檔與設定。
+第一次執行 Exult.app 時會自動把內容準備好。
+整個上層資料夾(含 Exult.app 與 ExultData)可以整包搬移、放隨身碟。
+EOF
+    cat >"$PROOT/使用說明.txt" <<'EOF'
+# 創世紀 7 (Ultima 7) 中文化版 - macOS 可攜版 (Portable)
+
+這是「免安裝、整包帶著走」的版本:引擎、中文化資料、遊戲檔、存檔、設定
+全部住在這個資料夾裡。放隨身碟、搬別台 Mac(Apple Silicon)都可以。
+
+## 使用方式
+1. 把整個資料夾解壓縮到任何地方(隨身碟也行)。
+2. 第一次執行:對 Exult.app 按住 Control 鍵點一下 → 「打開」→ 再按「打開」。
+   (沒有付費簽章的正常現象,只需做這一次)
+3. 依照跳出的視窗指引,放入你的正版遊戲 STATIC 檔案(或用自動搜尋)。
+4. 開始遊戲!之後雙擊即可。
+
+## 注意
+* Exult.app 和 ExultData 必須放在同一層;拆開的話 Exult.app 會退回
+  一般安裝模式(資料改存 ~/Library/Application Support/Exult)。
+* 更新版本時只要換掉 Exult.app,ExultData(含存檔)原封不動。
+EOF
+    rm -f "$OUT_ZIP"
+    /usr/bin/ditto -c -k --keepParent "$PROOT" "$OUT_ZIP"
+    rm -rf "$BUILD"
+    echo "==> Done: $OUT_ZIP ($(du -h "$OUT_ZIP" | cut -f1 | tr -d ' '))"
+    exit 0
+fi
 
 echo "==> Building DMG"
 DMG_ROOT="$BUILD/dmgroot"

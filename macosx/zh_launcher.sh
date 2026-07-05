@@ -24,10 +24,26 @@ set -u
 MACOS_DIR="$(cd "$(dirname "$0")" && pwd)"
 RESOURCES="$MACOS_DIR/../Resources"
 PAYLOAD="$RESOURCES/zh-content"
-SUPPORT="$HOME/Library/Application Support/Exult"
+APP_TITLE="Exult 中文版"
+
+# Portable mode: when an "ExultData" folder sits NEXT TO Exult.app, everything
+# (game data, saves, config, logs) lives inside it — the whole folder can move
+# between disks/machines. HOME is redirected so the engine's per-user paths
+# (cfg under Library/Preferences, savehome) also land inside ExultData, and
+# the preset cfg uses "./" relative paths with the engine launched from
+# ExultData, so nothing breaks when the folder is relocated.
+APP_ROOT="$(cd "$MACOS_DIR/../.." && pwd)"
+PORTABLE_ROOT="$(dirname "$APP_ROOT")"
+PORTABLE=0
+if [ -d "$PORTABLE_ROOT/ExultData" ]; then
+    PORTABLE=1
+    export HOME="$PORTABLE_ROOT/ExultData"
+    SUPPORT="$PORTABLE_ROOT/ExultData"
+else
+    SUPPORT="$HOME/Library/Application Support/Exult"
+fi
 STATIC_DIR="$SUPPORT/blackgate/STATIC"
 MARKER="$SUPPORT/.zh_content_version"
-APP_TITLE="Exult 中文版"
 
 LOG_DIR="$HOME/Library/Logs"
 mkdir -p "$LOG_DIR" 2>/dev/null
@@ -62,6 +78,26 @@ tell application "System Events"
 end tell
 EOF
 }
+
+# --------------------------------------------------------------------------
+# 0. Gatekeeper App Translocation makes macOS run a quarantined app from a
+#    randomized read-only mount — the ExultData sibling then can't be found
+#    and nothing can be written. Detect and guide the user out of it.
+# --------------------------------------------------------------------------
+case "$APP_ROOT" in
+*/AppTranslocation/*)
+    log "app is translocated: $APP_ROOT"
+    if [ "${EXULT_ZH_NONINTERACTIVE:-0}" != "1" ]; then
+        alert "macOS 的安全機制(App Translocation)正在隔離執行這個 App,無法存取旁邊的資料夾。
+
+請先關閉本視窗,然後對 Exult.app 按住 Control 鍵點一下 → 選「打開」→ 再按一次「打開」。
+
+若仍出現此訊息,請打開「終端機」執行:
+xattr -dr com.apple.quarantine \"放置資料夾的路徑\""
+    fi
+    exit 1
+    ;;
+esac
 
 # --------------------------------------------------------------------------
 # 1. Sync localization payload into Application Support
@@ -113,8 +149,15 @@ fi
 CFG="$HOME/Library/Preferences/exult.cfg"
 if [ ! -f "$CFG" ] && [ -f "$PAYLOAD/exult.cfg.template" ]; then
     mkdir -p "$HOME/Library/Preferences"
-    sed "s|@EXULT_HOME@|$SUPPORT|g" "$PAYLOAD/exult.cfg.template" >"$CFG" \
-        && log "installed preset exult.cfg" \
+    # Portable: "./" relative paths + engine launched from ExultData, so the
+    # cfg keeps working wherever the folder is moved. Installed: absolute.
+    if [ "$PORTABLE" = "1" ]; then
+        cfg_root="."
+    else
+        cfg_root="$SUPPORT"
+    fi
+    sed "s|@EXULT_HOME@|$cfg_root|g" "$PAYLOAD/exult.cfg.template" >"$CFG" \
+        && log "installed preset exult.cfg (root: $cfg_root)" \
         || log "WARNING: failed to install preset exult.cfg"
 fi
 
@@ -144,7 +187,7 @@ if ! has_static; then
 還差最後一步:需要你自己準備的正版遊戲檔。
 請把原版遊戲(例如 GOG 版)STATIC 資料夾內的【所有檔案】複製到:
 
-~/Library/Application Support/Exult/blackgate/STATIC/
+$STATIC_DIR
 
 也可以讓我用 Spotlight 幫你找找已安裝的遊戲。" \
             "結束" "自動搜尋遊戲檔" "打開 STATIC 資料夾")
@@ -192,9 +235,13 @@ fi
 # --------------------------------------------------------------------------
 # 3. Hand over to the real engine
 # --------------------------------------------------------------------------
-log "launching engine"
+log "launching engine (portable=$PORTABLE)"
+if [ "$PORTABLE" = "1" ]; then
+    # The preset cfg uses "./" paths — resolve them from ExultData.
+    cd "$SUPPORT" || exit 1
+fi
 if [ "${EXULT_ZH_NO_EXEC:-0}" = "1" ]; then
-    echo "WOULD_EXEC:$MACOS_DIR/exult"
+    echo "WOULD_EXEC:$MACOS_DIR/exult (cwd=$PWD)"
     exit 0
 fi
 exec "$MACOS_DIR/exult" "$@"
