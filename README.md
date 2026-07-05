@@ -11,7 +11,8 @@
 
 到 [**Releases**](../../releases) 下載 **`Ultima7_BlackGate_zhTW_v1.1_Portable.zip`**(可攜版):
 
-1. 解壓縮到任何地方(隨身碟也行)。
+1. 解壓縮後搬到**家目錄下的資料夾**(例如 `~/Games`)或隨身碟。
+   ⚠️ 別放「下載/桌面/文件」——macOS 隱私保護會擋存檔寫入,進不了遊戲。
 2. 第一次執行:對 `Exult.app` 按住 **Control 鍵點一下** → 「打開」→ 再按「打開」。
 3. 依跳出的視窗指引放入你的**正版**遊戲 STATIC 檔案(有裝 GOG 版可用「自動搜尋」一鍵複製)。
 4. 開始遊戲!
@@ -222,6 +223,7 @@ make osxdmg          # 連同拖曳安裝介面打包成 .dmg
 | 遊戲讀不到 / 要 sudo | 確認資料在**家目錄** `~/Library/Application Support/Exult/`(本 fork 新預設),不是系統層 `/Library` |
 | App **閃退**(無 crash report) | 多半是引擎乾淨例外退出。看引擎紀錄:可攜版 `ExultData/Library/Logs/Exult_engine.log`,安裝版 `~/Library/Logs/Exult_engine.log` |
 | 輸入角色名後退出 | 存檔目錄建不起來(舊版 cfg 缺 `savegame_path`/`gamedat_path`)→ 換 v1.1 以上的包,或刪掉 `exult.cfg` 重新啟動讓它重建 |
+| 可攜版進不了遊戲、log 出現 `Operation not permitted` | 資料夾放在「下載/桌面/文件」等 macOS 隱私保護區 → 整包搬到家目錄下的資料夾(例:`~/Games`)即解 |
 
 ### 技術備註
 

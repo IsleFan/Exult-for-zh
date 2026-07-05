@@ -61,6 +61,7 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >>"$LOG" 2>/dev/null; }
 # an empty result as "cancel", never as silence.
 dialog() {
     # dialog <text> <button1> [button2] [button3]  -> echoes clicked button
+    [ "${EXULT_ZH_NONINTERACTIVE:-0}" = "1" ] && return 1
     local text=$1; shift
     local buttons="\"$1\""
     local default=$1
@@ -77,6 +78,7 @@ EOF
 }
 
 alert() {
+    [ "${EXULT_ZH_NONINTERACTIVE:-0}" = "1" ] && return 0
     /usr/bin/osascript 2>>"$LOG" <<EOF >/dev/null
 display dialog "$1" buttons {"知道了"} default button "知道了" with title "$APP_TITLE" with icon caution
 EOF
@@ -101,6 +103,41 @@ xattr -dr com.apple.quarantine \"放置資料夾的路徑\""
     exit 1
     ;;
 esac
+
+# --------------------------------------------------------------------------
+# 0b. macOS TCC privacy protection: unsigned apps get EPERM writing inside
+#     ~/Downloads, ~/Desktop and ~/Documents (observed: the engine's cfg
+#     write fails even when the launcher's own writes succeed). Warn before
+#     anything else, and hard-verify writability.
+# --------------------------------------------------------------------------
+if [ "$PORTABLE" = "1" ]; then
+    case "$PORTABLE_ROOT" in
+    "$HOME/Downloads"*|"$HOME/Desktop"*|"$HOME/Documents"*)
+        log "portable root in TCC-protected location: $PORTABLE_ROOT"
+        if [ "${EXULT_ZH_NONINTERACTIVE:-0}" != "1" ]; then
+            choice=$(dialog "這個資料夾位於 macOS 隱私保護區(下載/桌面/文件),
+系統會擋下遊戲的存檔與設定寫入,導致無法進入遊戲。
+
+請把整個資料夾(含 Exult.app 與 ExultData)搬到別處,
+例如家目錄下的「Games」資料夾,再重新開啟。" \
+                "仍要嘗試" "結束")
+            [ "$choice" != "仍要嘗試" ] && exit 0
+        fi
+        ;;
+    esac
+fi
+mkdir -p "$SUPPORT" 2>/dev/null
+if ! ( : >"$SUPPORT/.zh_write_test" ) 2>/dev/null; then
+    log "write test failed in $SUPPORT"
+    alert "無法寫入資料夾:
+$SUPPORT
+
+多半是 macOS 隱私保護(下載/桌面/文件)或權限問題。
+請把整個資料夾搬到例如「家目錄/Games」,
+或到 系統設定 → 隱私權與安全性 → 檔案與檔案夾 允許 Exult 存取。"
+    exit 1
+fi
+rm -f "$SUPPORT/.zh_write_test"
 
 # --------------------------------------------------------------------------
 # 1. Sync localization payload into Application Support
