@@ -29,6 +29,7 @@
 #endif
 
 #include "gamewin.h"
+#include "deferred_text.h"
 
 #include "Astar.h"
 #include "Audio.h"
@@ -142,6 +143,14 @@ namespace {
 
 // THE game window:
 Game_window* Game_window::game_window = nullptr;
+
+static bool is_serpent_isle_cjk() {
+	return Game::get_game_type() == SERPENT_ISLE;
+}
+
+static uint32_t get_sdl_ticks_cjk() {
+	return SDL_GetTicks();
+}
 
 /*
  *  Provide chirping birds.
@@ -318,6 +327,8 @@ Game_window::Game_window(
 		  walk_in_formation(false), debug(0), blits(0), scrolltx_l(0), scrollty_l(0), scrolltx_lp(0), scrollty_lp(0),
 		  scrolltx_lo(0), scrollty_lo(0), avposx_ld(0), avposy_ld(0), lerping_enabled(0) {
 	game_window = this;    // Set static ->.
+	chinese_is_serpent_isle_pfn = is_serpent_isle_cjk;
+	chinese_get_ticks_pfn = get_sdl_ticks_cjk;
 	clock       = new Game_clock(tqueue);
 	shape_man   = new Shape_manager();    // Create the single instance.
 	maps.push_back(map);                  // Map #0.
@@ -486,6 +497,9 @@ Game_window::Game_window(
  *  Blank out screen.
  */
 void Game_window::clear_screen(bool update) {
+	if (Deferred_text_renderer::instance().is_active()) {
+		Deferred_text_renderer::instance().clear();
+	}
 	win->BeginPaintIntoGuardBand(nullptr, nullptr, nullptr, nullptr);
 	win->fill8(0, win->get_full_width(), win->get_full_height(), win->get_start_x(), win->get_start_y());
 

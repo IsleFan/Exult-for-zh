@@ -34,10 +34,12 @@ Boston, MA  02111-1307, USA.
 #include "Configuration.h"
 #include "PointScaler.h"
 #include "common_types.h"
+#include "deferred_text.h"
 #include "istring.h"
 #include "items.h"
 #include "manip.h"
 #include "mouse.h"
+
 
 #include <cstdlib>
 #include <iostream>
@@ -654,6 +656,26 @@ void Image_window::create_surface(unsigned int w, unsigned int h) {
 	if (draw_surface != display_surface) {
 		ibuf->bits += guard_band + ibuf->line_width * guard_band;
 	}
+
+	// Set up deferred CJK text rendering: enable when using a non-trivial
+	// scaler (HQx, xBR, etc.) that would distort Chinese font rendering.
+	// When scale > 1 and draw_surface != display_surface, scaling is active.
+	bool use_deferred = (draw_surface != display_surface && scale > 1);
+	// Check config for user override
+	if (config) {
+		bool cfg_val = use_deferred;
+		config->value("config/video/chinese/post_scale_rendering", cfg_val, use_deferred);
+		use_deferred = cfg_val;
+	}
+	
+	// CRITICAL: We cannot use deferred text rendering if draw_surface is inter_surface.
+	// If they are the same, deferred renderer would permanently embed text into the game's
+	// background buffer (ibuf), causing text to flash and darken as the mouse moves over it.
+	if (draw_surface == inter_surface) {
+		use_deferred = false;
+	}
+
+	Deferred_text_renderer::instance().set_active(use_deferred, scale, inter_surface->w, inter_surface->h);
 }
 
 /*
@@ -762,6 +784,11 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 	display_surface = SDL_CreateSurface(w, h, SDL_GetPixelFormatForMasks(sbpp, sRmask, sGmask, sBmask, sAmask));
 	if (display_surface == nullptr) {
 		cout << "Couldn't create display surface: " << SDL_GetError() << std::endl;
+	} else {
+		const SDL_PixelFormatDetails* d_fmt = SDL_GetPixelFormatDetails(display_surface->format);
+		if (d_fmt) {
+			SDL_FillSurfaceRect(display_surface, nullptr, SDL_MapRGBA(d_fmt, nullptr, 0, 0, 0, 255));
+		}
 	}
 	if (screen_texture == nullptr) {
 		screen_texture = SDL_CreateTexture(
@@ -791,8 +818,14 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 		return false;
 	}
 
-	// Scale using 'fill_scaler' only
-	if (fill_scaler != SDLScaler && (scaler == fill_scaler || scale == 1)) {
+	bool force_inter = false;
+	if (config) {
+		config->value("config/video/chinese/post_scale_rendering", force_inter, false);
+	}
+
+	// Scale using 'fill_scaler' only. If we need post_scale_rendering, we MUST force
+	// inter_surface to be separate from draw_surface, otherwise text will bleed into ibuf.
+	if (!force_inter && fill_scaler != SDLScaler && (scaler == fill_scaler || scale == 1)) {
 		inter_surface = draw_surface;
 	} else if (inter_width != w || inter_height != h) {
 		const SDL_PixelFormatDetails* display_surface_format = SDL_GetPixelFormatDetails(display_surface->format);
@@ -806,6 +839,11 @@ bool Image_window::create_scale_surfaces(int w, int h, int bpp) {
 			cerr << "Couldn't create inter surface: " << SDL_GetError() << endl;
 			free_surface();
 			return false;
+		} else {
+			const SDL_PixelFormatDetails* i_fmt = SDL_GetPixelFormatDetails(inter_surface->format);
+			if (i_fmt) {
+				SDL_FillSurfaceRect(inter_surface, nullptr, SDL_MapRGBA(i_fmt, nullptr, 0, 0, 0, 255));
+			}
 		}
 	}
 	// Scale using 'scaler' only
@@ -938,6 +976,7 @@ void Image_window::resized(
  *   Repaint portion of window.
  */
 
+
 void Image_window::show(int x, int y, int w, int h) {
 	if (!ready()) {
 		return;
@@ -992,6 +1031,11 @@ void Image_window::show(int x, int y, int w, int h) {
 		h = buffer_h - y;
 	}
 
+	const int unscaled_x = x;
+	const int unscaled_y = y;
+	const int unscaled_w = w;
+	const int unscaled_h = h;
+
 	// Phase 1 blit from draw_surface to inter_surface
 	if (draw_surface != inter_surface) {
 		const ScalerInfo& sel_scaler = Scalers[scaler];
@@ -1043,6 +1087,17 @@ void Image_window::show(int x, int y, int w, int h) {
 		w *= scale;
 		h *= scale;
 	}
+
+	// Phase 1.5: Blit deferred high-res Chinese text onto inter_surface.
+	// To keep the cursor visible on top of text, we mask it out during blit.
+	auto& deferred = Deferred_text_renderer::instance();
+	if (deferred.is_active()) {
+		int text_gb = (inter_surface != display_surface) ? guard_band : 0;
+		deferred.blit(inter_surface, unscaled_x, unscaled_y, unscaled_w, unscaled_h, text_gb);
+	}
+
+
+
 
 	// Phase 2 blit from inter_surface to display_surface
 	if (inter_surface != display_surface && fill_scaler != SDLScaler) {
