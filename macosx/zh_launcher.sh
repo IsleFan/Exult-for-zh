@@ -50,6 +50,12 @@ mkdir -p "$LOG_DIR" 2>/dev/null
 LOG="$LOG_DIR/Exult_zh_launcher.log"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >>"$LOG" 2>/dev/null; }
 
+# Dialogs use plain `display dialog` (NOT `tell application "System Events"`):
+# scripting System Events needs the TCC Automation permission, which a
+# Finder-launched unsigned app doesn't get — osascript then fails silently
+# and the launcher would quit looking like a crash. Plain display dialog
+# needs no permission at all. Escape/error returns "" — callers must treat
+# an empty result as "cancel", never as silence.
 dialog() {
     # dialog <text> <button1> [button2] [button3]  -> echoes clicked button
     local text=$1; shift
@@ -62,20 +68,14 @@ dialog() {
         shift
     done
     /usr/bin/osascript 2>>"$LOG" <<EOF
-tell application "System Events"
-    activate
-    set r to display dialog "$text" buttons {$buttons} default button "$default" with title "$APP_TITLE" with icon note
-    return button returned of r
-end tell
+set r to display dialog "$text" buttons {$buttons} default button "$default" with title "$APP_TITLE" with icon note
+return button returned of r
 EOF
 }
 
 alert() {
     /usr/bin/osascript 2>>"$LOG" <<EOF >/dev/null
-tell application "System Events"
-    activate
-    display dialog "$1" buttons {"知道了"} default button "知道了" with title "$APP_TITLE" with icon caution
-end tell
+display dialog "$1" buttons {"知道了"} default button "知道了" with title "$APP_TITLE" with icon caution
 EOF
 }
 
@@ -183,7 +183,6 @@ if ! has_static; then
     fi
     while ! has_static; do
         choice=$(dialog "歡迎使用《創世紀 7:黑門》中文版!
-
 還差最後一步:需要你自己準備的正版遊戲檔。
 請把原版遊戲(例如 GOG 版)STATIC 資料夾內的【所有檔案】複製到:
 
@@ -191,6 +190,16 @@ $STATIC_DIR
 
 也可以讓我用 Spotlight 幫你找找已安裝的遊戲。" \
             "結束" "自動搜尋遊戲檔" "打開 STATIC 資料夾")
+        # Dialog machinery unavailable (osascript failed) — don't quit
+        # silently: open the STATIC folder + the guide so the user still
+        # knows what to do, then exit.
+        if [ -z "$choice" ]; then
+            log "dialog failed; falling back to opening STATIC folder"
+            /usr/bin/open "$STATIC_DIR" 2>>"$LOG"
+            guide="$PORTABLE_ROOT/使用說明.txt"
+            [ "$PORTABLE" = "1" ] && [ -f "$guide" ] && /usr/bin/open "$guide" 2>>"$LOG"
+            exit 1
+        fi
         case "$choice" in
         "打開 STATIC 資料夾")
             /usr/bin/open "$STATIC_DIR"

@@ -150,6 +150,13 @@ EOF
 3. 依照跳出的視窗指引,放入你的正版遊戲 STATIC 檔案(或用自動搜尋)。
 4. 開始遊戲!之後雙擊即可。
 
+## 所有東西都在 ExultData 裡
+* 遊戲檔:      ExultData/blackgate/STATIC/
+* 存檔與進度:  ExultData/blackgate/(gamedat 資料夾與 save 檔)
+* 設定檔:      ExultData/Library/Preferences/exult.cfg
+* 中文化資料:  ExultData/data/ 與 ExultData/blackgate/patch/
+備份或搬家 = 複製整個資料夾,就這麼簡單。
+
 ## 注意
 * Exult.app 和 ExultData 必須放在同一層;拆開的話 Exult.app 會退回
   一般安裝模式(資料改存 ~/Library/Application Support/Exult)。
