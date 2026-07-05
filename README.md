@@ -12,7 +12,9 @@
 到 [**Releases**](../../releases) 下載 **`Ultima7_BlackGate_zhTW_v1.1_Portable.zip`**(可攜版):
 
 1. 解壓縮後搬到**家目錄下的資料夾**(例如 `~/Games`)或隨身碟。
-   ⚠️ 別放「下載/桌面/文件」——macOS 隱私保護會擋存檔寫入,進不了遊戲。
+   ⚠️ 別放「下載/桌面/文件」——macOS 隱私保護會擋遊戲讀寫,進不了遊戲。
+   放錯位置也沒關係:啟動時會跳警告,按**「自動搬移(推薦)」**即可
+   (過程中若系統詢問「Exult 想要控制 Finder」請按允許)。
 2. 第一次執行:對 `Exult.app` 按住 **Control 鍵點一下** → 「打開」→ 再按「打開」。
 3. 依跳出的視窗指引放入你的**正版**遊戲 STATIC 檔案(有裝 GOG 版可用「自動搜尋」一鍵複製)。
 4. 開始遊戲!
@@ -140,6 +142,15 @@ Ultima7_BlackGate_zhTW_v1.1_Portable/
 除錯:引擎的錯誤輸出在 `ExultData/Library/Logs/Exult_engine.log`
 (一般安裝模式在 `~/Library/Logs/`)。
 
+### macOS 隱私保護(TCC)實測筆記
+
+未簽章 App 放在「下載/桌面/文件」時,系統對第三方引擎二進位是
+**靜默拒絕、不跳授權視窗**(`tccutil reset` 也喚不出來),但對 Apple
+自家工具(bash/rsync)放行;`mv`/`ditto` 把資料夾搬出保護區同樣被擋。
+唯一可靠會出現的授權視窗是「自動化(控制 Finder)」——因此啟動器的
+「自動搬移」按鈕先嘗試複製,失敗即改請 Finder 代為搬移(觸發該授權),
+最後保底才引導手動拖曳。
+
 ---
 
 
@@ -223,7 +234,7 @@ make osxdmg          # 連同拖曳安裝介面打包成 .dmg
 | 遊戲讀不到 / 要 sudo | 確認資料在**家目錄** `~/Library/Application Support/Exult/`(本 fork 新預設),不是系統層 `/Library` |
 | App **閃退**(無 crash report) | 多半是引擎乾淨例外退出。看引擎紀錄:可攜版 `ExultData/Library/Logs/Exult_engine.log`,安裝版 `~/Library/Logs/Exult_engine.log` |
 | 輸入角色名後退出 | 存檔目錄建不起來(舊版 cfg 缺 `savegame_path`/`gamedat_path`)→ 換 v1.1 以上的包,或刪掉 `exult.cfg` 重新啟動讓它重建 |
-| 可攜版進不了遊戲、log 出現 `Operation not permitted` | 資料夾放在「下載/桌面/文件」等 macOS 隱私保護區 → 整包搬到家目錄下的資料夾(例:`~/Games`)即解 |
+| 可攜版進不了遊戲、log 出現 `Operation not permitted` | 資料夾放在「下載/桌面/文件」等 macOS 隱私保護區 → 重新啟動並按警告視窗的「自動搬移(推薦)」,或手動整包搬到家目錄下的資料夾(例:`~/Games`)|
 
 ### 技術備註
 
